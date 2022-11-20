@@ -367,11 +367,30 @@ const fun = {
   
       // Alhumdulillah Excellent work so far! the load balancer is on its way to become a power function InshAllah!
 
+      // Find the campaign ID of the designated employee
+
+      const designatedEmployeeCampaignId = employeesSheet.getRange(primaryIndexOfLowestLoadEmployeeArray + 2, 12).getValue(); 
+
       // Find spreadSheet & campaigns sheet of the lowest load employee
 
       const targetEmployeeSpreadsheetId = lowestLoadEmployeeArray[6]; 
       const targetEmployeeSS = SpreadsheetApp.openById(targetEmployeeSpreadsheetId); 
-      const targetEmployeeProjectsSheet = targetEmployeeSS.getSheetByName('Campaigns');
+      const targetEmployeeCampaignSheet = targetEmployeeSS.getSheetByName('Campaigns');
+
+      // Find the campaign record matching the campaign ID of the designated employee 
+
+      const targetEmployeeCampSheetRange = targetEmployeeCampaignSheet.getRange(2, 1, targetEmployeeCampaignSheet.getLastRow() -1,targetEmployeeCampaignSheet.getLastColumn()); 
+      const targetEmployeeCampaignDataArray = targetEmployeeCampSheetRange.getValues(); 
+
+      const ActiveCampaignRow = targetEmployeeCampaignDataArray.filter( campaign => {
+
+        return campaign[0] == designatedEmployeeCampaignId; 
+
+      }); 
+
+      Logger.log('The active campaign row is'); 
+      
+      Logger.log(ActiveCampaignRow); 
       
       // Add a new project after the last row at lowest load employee's project's sheet 
 

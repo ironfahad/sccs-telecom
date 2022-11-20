@@ -26,7 +26,7 @@ function telecomEventProcessing(e) {
 
         // Transfer the current row record to the lowest load Inside Sales Executive 
 
-        fun.loadBalancer('Inside Sales Executive', fun.getEventData(e).companyID); 
+        fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID); 
 
     
 

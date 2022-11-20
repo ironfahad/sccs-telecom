@@ -15,7 +15,7 @@ const resources = {
   
       const ss = SpreadsheetApp.openById(this.strategicId); 
       const strategicTasksSheet = ss.getSheetByName('Strategic Management'); 
-      const dataRange = sheet.getRange(2,1, sheet.getLastRow() -1, sheet.getLastColumn()); 
+      const dataRange = strategicTasksSheet.getRange(2,1, strategicTasksSheet.getLastRow() -1, strategicTasksSheet.getLastColumn()); 
       const values = dataRange.getValues(); 
       const archivedTasksSheet = ss.getSheetByName('archivedTasks'); 
       const cliSheet = ss.getSheetByName('cli'); 
