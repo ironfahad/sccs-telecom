@@ -14,7 +14,7 @@ const resources = {
     strategicSS: function () {
   
       const ss = SpreadsheetApp.openById(this.strategicId); 
-      const sheet = ss.getSheetByName('Strategic Management'); 
+      const strategicTasksSheet = ss.getSheetByName('Strategic Management'); 
       const dataRange = sheet.getRange(2,1, sheet.getLastRow() -1, sheet.getLastColumn()); 
       const values = dataRange.getValues(); 
       const archivedTasksSheet = ss.getSheetByName('archivedTasks'); 
@@ -22,7 +22,7 @@ const resources = {
       const operationsSheet = ss.getSheetByName('Operations'); 
       const hrMSheet = ss.getSheetByName('HRM'); 
   
-      return {ss, sheet, archivedTasksSheet, dataRange, values, cliSheet, operationsSheet, hrMSheet}; 
+      return {ss, strategicTasksSheet, archivedTasksSheet, dataRange, values, cliSheet, operationsSheet, hrMSheet}; 
   
     },
   

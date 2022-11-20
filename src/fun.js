@@ -211,21 +211,41 @@ const fun = {
   
   
   
-      const taskID = activeDataRowArray[0][0]; 
-      const dateValue = activeDataRowArray[0][1]; 
-      const primarytask = activeDataRowArray[0][2]; 
-      const subTask = activeDataRowArray[0][3]; 
-      const timeValue = activeDataRowArray[0][4]; 
-      const priority = activeDataRowArray[0][5]; 
-      const delegateValue = activeDataRowArray[0][6]; 
-      const status = activeDataRowArray[0][7]; 
-      const inputComm = activeDataRowArray[0][8]; 
-      const outputComm = activeDataRowArray[0][9]; 
+      const companyID = activeDataRowArray[0][0]; 
+      const companyName = activeDataRowArray[0][1]; 
+      const companyAddress = activeDataRowArray[0][2]; 
+      const companyCity = activeDataRowArray[0][3]; 
+      const companyPersonName = activeDataRowArray[0][4]; 
+      const companyPersonMobile = activeDataRowArray[0][5]; 
+      const companyLandline = activeDataRowArray[0][6]; 
+      const companyEmail = activeDataRowArray[0][7]; 
+      const callResponse = activeDataRowArray[0][8]; 
+      const contactNameVerification = activeDataRowArray[0][9];
+      const actualContactName = activeDataRowArray[0][10];
+      const companyNameVerification = activeDataRowArray[0][11];
+      const actualCompanyName = activeDataRowArray[0][12];
+      const clientResponse = activeDataRowArray[0][13];
+      const meetingGranted = activeDataRowArray[0][14];
+      const meetingTime = activeDataRowArray[0][15];
+      const meetingDate = activeDataRowArray[0][16];
+      const askedQuestions = activeDataRowArray[0][17];
+      const givenComplements = activeDataRowArray[0][18];
+      const needProductData = activeDataRowArray[0][19];
+      const interestLevel = activeDataRowArray[0][20];
+      const specificPackageInquiry = activeDataRowArray[0][21];
+      const companyStatus = activeDataRowArray[0][22];
+      const remarks = activeDataRowArray[0][23];
+      const competitionType = activeDataRowArray[0][24]; 
   
       Logger.log('Event Object Executed Successfully'); 
   
   
-      return {activeSpreadsheet, activesheet, dataRange, totalDataArray, activeRowRange, activeDataRowArray, taskID, dateValue, primarytask, subTask, timeValue, priority, delegateValue, status, inputComm, outputComm, sheetName}; 
+      return {activeSpreadsheet, activesheet, dataRange, 
+        totalDataArray, activeRowRange, activeDataRowArray, companyID, companyName, companyAddress, 
+        companyCity, companyPersonName, companyPersonMobile, companyLandline, companyEmail, callResponse, 
+        contactNameVerification, actualContactName, companyNameVerification, actualCompanyName, clientResponse, 
+        meetingGranted, meetingTime, meetingDate, askedQuestions, givenComplements, needProductData, interestLevel, 
+        specificPackageInquiry, companyStatus, remarks, competitionType}; 
       
   
     },  
@@ -262,10 +282,13 @@ const fun = {
     },
   
     loadBalancer: function (jobTitle, taskID) {
+
+      // Acquire functional parameters 
   
       const designation = jobTitle; 
-      // const arrayOfTask = taskArray; 
       const projectId = taskID; 
+
+      // Acquire Resources Data
   
       const employeesSheet = resources.strategicSS().ss.getSheetByName('HRM'); 
       const employeesDataRange = employeesSheet.getRange(2, 1, employeesSheet.getLastRow() - 1, employeesSheet.getLastColumn()); 
@@ -274,17 +297,16 @@ const fun = {
       const projectsRange = operationsSheet.getRange(2, 1, operationsSheet.getLastRow() - 1, 11);
       const operationsTotalProjectsArray = projectsRange.getValues();  
       const strategicTasksSheet = resources.strategicSS().ss.getSheetByName('Strategic Management'); 
-  
-  
-      // pasted code will come here 
-      
+
+      // Verify the accuracy of the resources data
        
       Logger.log('load balancer projectID will come here'); 
       Logger.log(projectId); 
    
       Logger.log('Total projects Array will come here'); 
       Logger.log(operationsTotalProjectsArray); 
-  
+
+      // Update the status of project record in operations sheet 
   
       const targetProjectArray = operationsTotalProjectsArray.filter( project => {
       return project[0] == projectId; 
@@ -303,13 +325,13 @@ const fun = {
       // Need to update this status futher when market research updates its status to Accepted 
   
   
-      // pasted code will end here 
-  
-  
+      // Find employees with similar designation 
   
       const matchingEmployeesArray = employeesDataArray.filter( employee => {
         return employee[4] === designation; 
       }); 
+
+      // Find the designated employee with lowest load value
   
       const currentLoadValues = []; 
   
@@ -329,12 +351,14 @@ const fun = {
       const lowestLoadEmployeeArray = matchingEmployeesArray[indexOfLowestLoadValue]; 
       Logger.log('The data array of employee with lowest load value'); 
       Logger.log(lowestLoadEmployeeArray); 
+
       const lowestLoadEmployeeId = lowestLoadEmployeeArray[0]; 
       Logger.log("primary index No. is: "); 
   
       const primaryIndexOfLowestLoadEmployeeArray = employeesDataArray.indexOf(lowestLoadEmployeeArray); 
-      Logger.log(primaryIndexOfLowestLoadEmployeeArray); 
-  
+      Logger.log(primaryIndexOfLowestLoadEmployeeArray);
+
+      // Update the load value of employee with lowest load value
   
       lowestLoadEmployeeArray[9] = lowestLoadEmployeeArray[9] + 1; 
       const sSLowestLoadEmployeeRange = employeesSheet.getRange(primaryIndexOfLowestLoadEmployeeArray + 2, 10); 
@@ -342,9 +366,15 @@ const fun = {
       
   
       // Alhumdulillah Excellent work so far! the load balancer is on its way to become a power function InshAllah!
+
+      // Find spreadSheet & projects sheet of the lowest load employee
+
       const targetEmployeeSpreadsheetId = lowestLoadEmployeeArray[6]; 
       const targetEmployeeSS = SpreadsheetApp.openById(targetEmployeeSpreadsheetId); 
-      const targetEmployeeProjectsSheet = targetEmployeeSS.getSheetByName('Projects'); 
+      const targetEmployeeProjectsSheet = targetEmployeeSS.getSheetByName('Projects');
+      
+      // Add a new project after the last row at lowest load employee's project's sheet 
+
       const LastRowRange = targetEmployeeProjectsSheet.getRange(targetEmployeeProjectsSheet.getLastRow() + 1, 1, 1, targetEmployeeProjectsSheet.getLastColumn()); 
       Logger.log('The array of target project that will come at the end is'); 
   
@@ -352,7 +382,7 @@ const fun = {
   
       LastRowRange.setValues(targetProjectArray);  
   
-      // Code for sharing documents will come here 
+      // Get the project folder link from the operations sheet's cell URL 
   
       const targetEmployeeEmailAddress = lowestLoadEmployeeArray[7];
       const projectFolderCellArray = operationsSheet.getRange(indexOfTargetProject + 2, 4).getFormula().split('/'); 
@@ -360,12 +390,15 @@ const fun = {
       const folderLinkValue = projectFolderCellArray[5].split(','); 
   
       const folderlinkAddress = folderLinkValue[0].slice(0, -1); 
-    
-  
       Logger.log(`folder link address is ${folderlinkAddress}`); 
+
+      // Share the folder with the lowest load employee
+
+      
+
+
   
       // Ends here ... 
-  
   
   
     }
