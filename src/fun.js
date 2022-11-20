@@ -281,7 +281,7 @@ const fun = {
   
     },
   
-    loadBalancer: function (jobTitle, taskID) {
+    loadBalancerCompany: function (jobTitle, taskID) {
 
       // Acquire functional parameters 
   
@@ -308,19 +308,19 @@ const fun = {
 
       // Update the status of project record in operations sheet 
   
-      const targetProjectArray = operationsTotalProjectsArray.filter( project => {
-      return project[0] == projectId; 
+      // const targetProjectArray = operationsTotalProjectsArray.filter( project => {
+      // return project[0] == projectId; 
   
-      })
-      Logger.log('target project array will come here'); 
-      Logger.log(targetProjectArray); 
+      // })
+      // Logger.log('target project array will come here'); 
+      // Logger.log(targetProjectArray); 
   
   
-      const indexOfTargetProject = operationsTotalProjectsArray.indexOf(targetProjectArray[0]); 
-      Logger.log(indexOfTargetProject); 
+      // const indexOfTargetProject = operationsTotalProjectsArray.indexOf(targetProjectArray[0]); 
+      // Logger.log(indexOfTargetProject); 
   
-      const targetProjectStatusRange = operationsSheet.getRange(indexOfTargetProject + 2, 9);
-      targetProjectStatusRange.setValue(`Assigned to ${designation}`); 
+      // const targetProjectStatusRange = operationsSheet.getRange(indexOfTargetProject + 2, 9);
+      // targetProjectStatusRange.setValue(`Assigned to ${designation}`); 
   
       // Need to update this status futher when market research updates its status to Accepted 
   
@@ -367,11 +367,11 @@ const fun = {
   
       // Alhumdulillah Excellent work so far! the load balancer is on its way to become a power function InshAllah!
 
-      // Find spreadSheet & projects sheet of the lowest load employee
+      // Find spreadSheet & campaigns sheet of the lowest load employee
 
       const targetEmployeeSpreadsheetId = lowestLoadEmployeeArray[6]; 
       const targetEmployeeSS = SpreadsheetApp.openById(targetEmployeeSpreadsheetId); 
-      const targetEmployeeProjectsSheet = targetEmployeeSS.getSheetByName('Projects');
+      const targetEmployeeProjectsSheet = targetEmployeeSS.getSheetByName('Campaigns');
       
       // Add a new project after the last row at lowest load employee's project's sheet 
 
@@ -394,7 +394,7 @@ const fun = {
 
       // Share the folder with the lowest load employee
 
-      
+
 
 
   
