@@ -281,7 +281,7 @@ const fun = {
   
     },
   
-    loadBalancerCompany: function (jobTitle, taskID) {
+    loadBalancerCompany: function (jobTitle, taskID, e) {
 
       // Acquire functional parameters 
   
@@ -382,15 +382,58 @@ const fun = {
       const targetEmployeeCampSheetRange = targetEmployeeCampaignSheet.getRange(2, 1, targetEmployeeCampaignSheet.getLastRow() -1,targetEmployeeCampaignSheet.getLastColumn()); 
       const targetEmployeeCampaignDataArray = targetEmployeeCampSheetRange.getValues(); 
 
-      const ActiveCampaignRow = targetEmployeeCampaignDataArray.filter( campaign => {
+      const activeCampaignRow = targetEmployeeCampaignDataArray.filter( campaign => {
 
         return campaign[0] == designatedEmployeeCampaignId; 
 
       }); 
 
       Logger.log('The active campaign row is'); 
+
+      Logger.log(activeCampaignRow); 
+
+      // Extract the url from the targetlist cell 
+
+      const indexOfActiveCampaignRow = targetEmployeeCampaignDataArray.indexOf(activeCampaignRow[0]); 
+
+      Logger.log(`Index of active campaign row is ${indexOfActiveCampaignRow}`); 
+
+      SpreadsheetApp.getActive().toast(`Index of active campaign row is ${indexOfActiveCampaignRow}`);
       
-      Logger.log(ActiveCampaignRow); 
+      const campaignTargetListCellRange = targetEmployeeCampaignSheet.getRange(indexOfActiveCampaignRow + 2, 5); 
+      const campaignTargetListCellArray = campaignTargetListCellRange.getFormula().split('/');
+      Logger.log('the split formula is'); 
+      Logger.log(campaignTargetListCellArray); 
+
+      // Extract the file ID from the URL formula
+
+      const campaignTargetListFileLinkValue = campaignTargetListCellArray[5].split(','); 
+      Logger.log('The campaign link value array is '); 
+      Logger.log(campaignTargetListFileLinkValue); 
+      const campaignTargetListFileId = campaignTargetListFileLinkValue[0];  
+
+      Logger.log(`The campaign target list file ID is ${campaignTargetListFileId}`); // verified successfully! Alhumdulillah
+
+      // Open spreadsheet and companies list sheet of the campaign file 
+
+      const designatedCampaignSpreadSheet = SpreadsheetApp.openById('1gwg9Ub0DpoZ_h305sVuYqBrGgYeiOW-f76c38qHJV_A'); 
+      const companiesListSheet = designatedCampaignSpreadSheet.getSheetByName('Sheet1'); 
+      const companiesListLastRowRange = companiesListSheet.getRange(companiesListSheet.getLastRow() + 1, 1, 1, companiesListSheet.getLastColumn()); 
+
+      // Get the active sheet data row 
+
+      const ActiveCompanyDataArray = fun.getEventData(e).activeDataRowArray; 
+
+      // Set the data to the target sheet 
+
+      Logger.log(`Active company data array is`); 
+
+      Logger.log(ActiveCompanyDataArray); 
+
+      companiesListLastRowRange.setValues(ActiveCompanyDataArray); 
+
+
+
       
       // Add a new project after the last row at lowest load employee's project's sheet 
 
