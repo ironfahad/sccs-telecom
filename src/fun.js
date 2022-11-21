@@ -416,7 +416,7 @@ const fun = {
 
       // Open spreadsheet and companies list sheet of the campaign file 
 
-      const designatedCampaignSpreadSheet = SpreadsheetApp.openById('1gwg9Ub0DpoZ_h305sVuYqBrGgYeiOW-f76c38qHJV_A'); 
+      const designatedCampaignSpreadSheet = SpreadsheetApp.openById(campaignTargetListFileId); 
       const companiesListSheet = designatedCampaignSpreadSheet.getSheetByName('Sheet1'); 
       const companiesListLastRowRange = companiesListSheet.getRange(companiesListSheet.getLastRow() + 1, 1, 1, companiesListSheet.getLastColumn()); 
 
@@ -431,37 +431,6 @@ const fun = {
       Logger.log(ActiveCompanyDataArray); 
 
       companiesListLastRowRange.setValues(ActiveCompanyDataArray); 
-
-
-
-      
-      // Add a new project after the last row at lowest load employee's project's sheet 
-
-      const LastRowRange = targetEmployeeProjectsSheet.getRange(targetEmployeeProjectsSheet.getLastRow() + 1, 1, 1, targetEmployeeProjectsSheet.getLastColumn()); 
-      Logger.log('The array of target project that will come at the end is'); 
-  
-      Logger.log(targetProjectArray); 
-  
-      LastRowRange.setValues(targetProjectArray);  
-  
-      // Get the project folder link from the operations sheet's cell URL 
-  
-      const targetEmployeeEmailAddress = lowestLoadEmployeeArray[7];
-      const projectFolderCellArray = operationsSheet.getRange(indexOfTargetProject + 2, 4).getFormula().split('/'); 
-      Logger.log(projectFolderCellArray); 
-      const folderLinkValue = projectFolderCellArray[5].split(','); 
-  
-      const folderlinkAddress = folderLinkValue[0].slice(0, -1); 
-      Logger.log(`folder link address is ${folderlinkAddress}`); 
-
-      // Share the folder with the lowest load employee
-
-
-
-
-  
-      // Ends here ... 
-  
   
     }
   
