@@ -304,26 +304,7 @@ const fun = {
       Logger.log(projectId); 
    
       Logger.log('Total projects Array will come here'); 
-      Logger.log(operationsTotalProjectsArray); 
-
-      // Update the status of project record in operations sheet 
-  
-      // const targetProjectArray = operationsTotalProjectsArray.filter( project => {
-      // return project[0] == projectId; 
-  
-      // })
-      // Logger.log('target project array will come here'); 
-      // Logger.log(targetProjectArray); 
-  
-  
-      // const indexOfTargetProject = operationsTotalProjectsArray.indexOf(targetProjectArray[0]); 
-      // Logger.log(indexOfTargetProject); 
-  
-      // const targetProjectStatusRange = operationsSheet.getRange(indexOfTargetProject + 2, 9);
-      // targetProjectStatusRange.setValue(`Assigned to ${designation}`); 
-  
-      // Need to update this status futher when market research updates its status to Accepted 
-  
+      Logger.log(operationsTotalProjectsArray);  
   
       // Find employees with similar designation 
   
@@ -431,6 +412,158 @@ const fun = {
       Logger.log(ActiveCompanyDataArray); 
 
       companiesListLastRowRange.setValues(ActiveCompanyDataArray); 
+  
+    }, 
+
+    loadBalancerActivity: function (jobTitle, taskID, e, activityType) {
+
+      // Acquire functional parameters 
+  
+      const designation = jobTitle; 
+      const projectId = taskID; 
+      const typeOfActivity = activityType; 
+
+
+
+      // Acquire Resources Data
+  
+      const employeesSheet = resources.strategicSS().ss.getSheetByName('HRM'); 
+      const employeesDataRange = employeesSheet.getRange(2, 1, employeesSheet.getLastRow() - 1, employeesSheet.getLastColumn()); 
+      const employeesDataArray = employeesDataRange.getValues(); 
+      const operationsSheet = resources.strategicSS().operationsSheet; 
+      const projectsRange = operationsSheet.getRange(2, 1, operationsSheet.getLastRow() - 1, 11);
+      const operationsTotalProjectsArray = projectsRange.getValues();  
+      const strategicTasksSheet = resources.strategicSS().ss.getSheetByName('Strategic Management'); 
+
+      // Verify the accuracy of the resources data
+       
+      Logger.log('load balancer projectID will come here'); 
+      Logger.log(projectId); 
+   
+      Logger.log('Total projects Array will come here'); 
+      Logger.log(operationsTotalProjectsArray);  
+  
+      // Find employees with similar designation 
+  
+      const matchingEmployeesArray = employeesDataArray.filter( employee => {
+        return employee[4] === designation; 
+      }); 
+
+      // Find the designated employee with lowest load value
+  
+      const currentLoadValues = []; 
+  
+      matchingEmployeesArray.forEach(employee => {
+        currentLoadValues.push(employee[9]); 
+      })
+  
+      Logger.log('the current load values are'); 
+      Logger.log(currentLoadValues); 
+  
+      const lowestLoadValue = Math.min(...currentLoadValues); 
+      Logger.log('The lowest load value is:'); 
+      Logger.log(lowestLoadValue); 
+      const indexOfLowestLoadValue = currentLoadValues.indexOf(lowestLoadValue); 
+      Logger.log('The index of lowest load value is: '); 
+      Logger.log(indexOfLowestLoadValue); 
+      const lowestLoadEmployeeArray = matchingEmployeesArray[indexOfLowestLoadValue]; 
+      Logger.log('The data array of employee with lowest load value'); 
+      Logger.log(lowestLoadEmployeeArray); 
+
+      const lowestLoadEmployeeId = lowestLoadEmployeeArray[0]; 
+      Logger.log("primary index No. is: "); 
+  
+      const primaryIndexOfLowestLoadEmployeeArray = employeesDataArray.indexOf(lowestLoadEmployeeArray); 
+      Logger.log(primaryIndexOfLowestLoadEmployeeArray);
+
+      // Update the load value of employee with lowest load value
+  
+      lowestLoadEmployeeArray[9] = lowestLoadEmployeeArray[9] + 1; 
+      const sSLowestLoadEmployeeRange = employeesSheet.getRange(primaryIndexOfLowestLoadEmployeeArray + 2, 10); 
+      sSLowestLoadEmployeeRange.setValue(lowestLoadEmployeeArray[9]); 
+      
+  
+      // Alhumdulillah Excellent work so far! the load balancer is on its way to become a power function InshAllah!
+
+      // Find the campaign ID of the designated employee
+
+      const designatedEmployeeCampaignId = employeesSheet.getRange(primaryIndexOfLowestLoadEmployeeArray + 2, 12).getValue(); 
+
+      // Find spreadSheet & campaigns sheet of the lowest load employee
+
+      const targetEmployeeSpreadsheetId = lowestLoadEmployeeArray[6]; 
+      const targetEmployeeSS = SpreadsheetApp.openById(targetEmployeeSpreadsheetId); 
+      const targetEmployeeCampaignSheet = targetEmployeeSS.getSheetByName('Campaigns');
+
+      // Find the campaign record matching the campaign ID of the designated employee 
+
+      const targetEmployeeCampSheetRange = targetEmployeeCampaignSheet.getRange(2, 1, targetEmployeeCampaignSheet.getLastRow() -1,targetEmployeeCampaignSheet.getLastColumn()); 
+      const targetEmployeeCampaignDataArray = targetEmployeeCampSheetRange.getValues(); 
+
+      const activeCampaignRow = targetEmployeeCampaignDataArray.filter( campaign => {
+
+        return campaign[0] == designatedEmployeeCampaignId; 
+
+      }); 
+
+      Logger.log('The active campaign row is'); 
+
+      Logger.log(activeCampaignRow); 
+
+      // Extract the url from the targetlist cell 
+
+      const indexOfActiveCampaignRow = targetEmployeeCampaignDataArray.indexOf(activeCampaignRow[0]); 
+
+      Logger.log(`Index of active campaign row is ${indexOfActiveCampaignRow}`); 
+
+      SpreadsheetApp.getActive().toast(`Index of active campaign row is ${indexOfActiveCampaignRow}`);
+      
+      const campaignTargetListCellRange = targetEmployeeCampaignSheet.getRange(indexOfActiveCampaignRow + 2, 5); 
+      const campaignTargetListCellArray = campaignTargetListCellRange.getFormula().split('/');
+      Logger.log('the split formula is'); 
+      Logger.log(campaignTargetListCellArray); 
+
+      // Extract the file ID from the URL formula
+
+      const campaignTargetListFileLinkValue = campaignTargetListCellArray[5].split(','); 
+      Logger.log('The campaign link value array is '); 
+      Logger.log(campaignTargetListFileLinkValue); 
+      const campaignTargetListFileId = campaignTargetListFileLinkValue[0];  
+
+      Logger.log(`The campaign target list file ID is ${campaignTargetListFileId}`); // verified successfully! Alhumdulillah
+
+      // Open spreadsheet and activity sheet of the campaign file 
+
+      if(typeOfActivity == 'Call') {
+
+        const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Calls'); 
+        const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
+
+        const callDataArray = []; 
+        callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+        callDataArray[1] = fun.getEventData(e).companyID; 
+        callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
+        callDataArray[3] = fun.getEventData(e).companyLandline; 
+        callDataArray[5] = fun.getEventData(e).companyPersonName; 
+        callDataArray[6] = fun.getEventData(e).companyName; 
+        callDataArray[7] = fun.getEventData(e).remarks; 
+        callDataArray[8] = fun.getEventData(e).needProductData; 
+        callDataArray[9] = 'Outbound'; 
+        callDataArray[10] = '';
+        callDataArray[11] = '';
+        callDataArray[12] = '';
+        callDataArray[13] = '';
+        
+
+        Logger.log('the Call Data array is'); 
+        Logger.log(callDataArray); 
+
+        designatedEmployeeCallSheetRange.setValues([callDataArray]); 
+
+
+      }; 
+
+      
   
     }
   
