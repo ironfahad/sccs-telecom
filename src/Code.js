@@ -28,7 +28,6 @@ function telecomEventProcessing(e) {
 
         fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
-
     
 
     } else if( statusValue == 'Opportunity' && meetingValue == 'yes') {
@@ -38,11 +37,19 @@ function telecomEventProcessing(e) {
         // Transfer the current row record to the lowest load Marketing Executive 
 
         fun.loadBalancerCompany('Marketing Executive', fun.getEventData(e).companyID, e); 
+        fun.loadBalancerActivity('Marketing Executive', fun.getEventData(e).companyID, e, 'Meeting'); 
+
+    } else if ( statusValue = 'Opportunity' && meetingValue.length == 0 ) {
+
+        SpreadsheetApp.getActive().toast('Condition For Opportunity with no meeting activated successfully'); 
+
+        fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
+        fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
 
     } else {
 
         SpreadsheetApp.getActive().toast('No condition satisfied!'); 
-    }
+    }; 
 
 
 
