@@ -544,15 +544,15 @@ const fun = {
         callDataArray[1] = fun.getEventData(e).companyID; 
         callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
         callDataArray[3] = fun.getEventData(e).companyLandline; 
-        callDataArray[5] = fun.getEventData(e).companyPersonName; 
-        callDataArray[6] = fun.getEventData(e).companyName; 
-        callDataArray[7] = fun.getEventData(e).remarks; 
-        callDataArray[8] = fun.getEventData(e).needProductData; 
-        callDataArray[9] = 'Outbound'; 
+        callDataArray[4] = fun.getEventData(e).companyPersonName; 
+        callDataArray[5] = fun.getEventData(e).companyName; 
+        callDataArray[6] = fun.getEventData(e).remarks; 
+        callDataArray[7] = fun.getEventData(e).needProductData; 
+        callDataArray[8] = 'Outbound'; 
+        callDataArray[9] = '';
         callDataArray[10] = '';
         callDataArray[11] = '';
         callDataArray[12] = '';
-        callDataArray[13] = '';
         
 
         Logger.log('the Call Data array is'); 
