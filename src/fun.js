@@ -537,6 +537,37 @@ const fun = {
     if(typeOfActivity == 'Call') {
 
       const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Calls'); 
+      const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()).sort([{ column: 2, ascending: true }]);
+
+      const callDataArray = []; 
+      callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+      callDataArray[1] = fun.getEventData(e).companyID; 
+      callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
+      callDataArray[3] = fun.getEventData(e).companyLandline; 
+      callDataArray[4] = fun.getEventData(e).companyPersonName; 
+      callDataArray[5] = fun.getEventData(e).companyName; 
+      callDataArray[6] = fun.getEventData(e).remarks; 
+      callDataArray[7] = fun.getEventData(e).needProductData; 
+      callDataArray[8] = 'Outbound'; 
+      callDataArray[9] = '';
+      callDataArray[10] = '';
+      callDataArray[11] = '';
+      callDataArray[12] = '';
+      callDataArray[13] = ''; 
+       
+
+      Logger.log('the Call Data array is'); 
+      Logger.log(callDataArray); 
+
+      designatedEmployeeCallSheetRange.setValues([callDataArray]);
+      designatedEmployeeCallSheet.getRange(2, 1, designatedEmployeeCallSheet.getLastRow() - 1, designatedEmployeeCallSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
+      // designatedEmployeeCallSheet.sort(1);  
+      
+
+
+    }else if( typeOfActivity == 'Meeting'){
+
+      const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Meetings'); 
       const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
 
       const callDataArray = []; 
@@ -553,34 +584,8 @@ const fun = {
       callDataArray[10] = '';
       callDataArray[11] = '';
       callDataArray[12] = '';
-      
+      callDataArray[13] = ''; 
 
-      Logger.log('the Call Data array is'); 
-      Logger.log(callDataArray); 
-
-      designatedEmployeeCallSheetRange.setValues([callDataArray]); 
-      designatedEmployeeCallSheetRange.sort()
-
-
-    }else if( typeOfActivity == 'Meeting'){
-
-      const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Meetings'); 
-      const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
-
-      const callDataArray = []; 
-      callDataArray[0] = Math.floor(Math.random() * 10000000000); 
-      callDataArray[1] = fun.getEventData(e).companyID; 
-      callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
-      callDataArray[3] = fun.getEventData(e).companyLandline; 
-      callDataArray[5] = fun.getEventData(e).companyPersonName; 
-      callDataArray[6] = fun.getEventData(e).companyName; 
-      callDataArray[7] = fun.getEventData(e).remarks; 
-      callDataArray[8] = fun.getEventData(e).needProductData; 
-      callDataArray[9] = 'Outbound'; 
-      callDataArray[10] = '';
-      callDataArray[11] = '';
-      callDataArray[12] = '';
-      callDataArray[13] = '';
       
 
       Logger.log('the Call Data array is'); 
@@ -609,13 +614,14 @@ const fun = {
       callDataArray[10] = '';
       callDataArray[11] = '';
       callDataArray[12] = '';
+      callDataArray[13] = '';
       
 
       Logger.log('the Call Data array is'); 
       Logger.log(callDataArray); 
 
       designatedEmployeeCallSheetRange.setValues([callDataArray]); 
-      designatedEmployeeCallSheetRange.sort()
+      designatedEmployeeCallSheet.sort(1); 
     }; 
 
     

@@ -39,7 +39,7 @@ function telecomEventProcessing(e) {
         fun.loadBalancerCompany('Marketing Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Marketing Executive', fun.getEventData(e).companyID, e, 'Meeting'); 
 
-    } else if ( statusValue = 'Opportunity' && meetingValue.length == 0 ) {
+    } else if ( statusValue == 'Opportunity' && meetingValue.length == 0 ) {
 
         SpreadsheetApp.getActive().toast('Condition For Opportunity with no meeting activated successfully'); 
 
