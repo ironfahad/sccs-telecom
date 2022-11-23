@@ -2,12 +2,45 @@
 // PRAISE BE TO ALLAH, WHO HAS TAUGHT US WITH A PEN
 
 
+
+// /**
+//  * Creates a trigger for when a spreadsheet opens.
+//  * @see https://developers.google.com/apps-script/guides/triggers/installable
+//  */
+//  function createSpreadsheetOpenTrigger() {
+//     const ss = SpreadsheetApp.getActive();
+//     ScriptApp.newTrigger('checkAuthorization')
+//         .forSpreadsheet(ss)
+//         .onOpen()
+//         .create();
+//   }
+
+function onOpen(e) {
+    // This creates the Organize Menu Item
+    var ss = SpreadsheetApp.getUi(); 
+    ss.createMenu('Organize')
+    .addItem('Authorize Your Account', 'checkAuthorization')
+    .addToUi(); 
+  
+  }
+
 function editTrigger1() {
     ScriptApp.newTrigger('telecomEventProcessing')
     .forSpreadsheet(SpreadsheetApp.getActive())
     .onEdit()
     .create()
 }; 
+
+function checkAuthorization() {
+
+    var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+    var status = authInfo.getAuthorizationStatus();
+    url = authInfo.getAuthorizationUrl();
+    editTrigger1(); 
+    
+    Logger.log(status); 
+
+}
 
 
 function telecomEventProcessing(e) {
