@@ -50,7 +50,7 @@ function telecomEventProcessing(e) {
     const statusValue = fun.getEventData(e).companyStatus;
     const meetingValue = fun.getEventData(e).meetingGranted; 
     const columnValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(1, e.range.getColumn()).getValue(); 
-    const callResponseLowerCellValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(e.range.getRow() + 1, e.range.getColumn()).getValue(); 
+    const companyIdLowerCellValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(e.range.getRow() + 1, 1).getValue(); 
 
     Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}`); // verified 
 
@@ -82,7 +82,7 @@ function telecomEventProcessing(e) {
         fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
 
-    } else if( columnValue == 'Call Response' && callResponseLowerCellValue.length == 0) {
+    } else if( columnValue == 'Call Response' && companyIdLowerCellValue.length == 0) {
 
         const SpreadSheetName = SpreadsheetApp.getActiveSpreadsheet().getName(); 
         const SpreadSheetNameArray = SpreadSheetName.split('-'); 
@@ -91,7 +91,7 @@ function telecomEventProcessing(e) {
 
         Logger.log(`the campaign ID is ${campaignId} & the employee id is ${employeeId}`); 
 
-        fun.extractData(campaignId, 10); 
+        fun.extractData(campaignId, 10, 'Add'); 
 
 
 

@@ -626,7 +626,7 @@ const fun = {
 
     
 
-  }, extractData: function (projectId, NoOfRecords) {
+  }, extractData: function (projectId, NoOfRecords, dataAdditionMethod) {
 
     // Find the project row array
 
@@ -684,22 +684,47 @@ const fun = {
     const targetSpreadSheetDataSheet = SpreadsheetApp.openById(targetFileId).getSheetByName('Sheet1'); 
     const targetSpreadSheetDataSheetRange = targetSpreadSheetDataSheet.getRange(2, 1, NoOfRecords, sourceTargetlistSheet.getLastColumn()); 
     const targetEmployeeTelecomDataArray = targetSpreadSheetDataSheetRange.getValues(); 
+
+    // Data addition Methodology
     
+    if (dataAdditionMethod == 'Replace') {
 
-    targetSpreadSheetDataSheetRange.setValues(sourceTargetListArray);
+      // Delete all existing data in the target sheet and replace with fresh data 
 
+      targetSpreadSheetDataSheetTotalDataRange = targetSpreadSheetDataSheet.getRange(2, 1, targetSpreadSheetDataSheet.getLastRow() + 1, targetSpreadSheetDataSheet.getLastColumn()); 
+      targetSpreadSheetDataSheetTotalDataRange.clearContent(); 
 
-    SpreadsheetApp.getActive().toast('Data seems to be copied successfully!')
+      targetSpreadSheetDataSheetRange.setValues(sourceTargetListArray);
 
-    // 9. delete the same records from the duplicate targetlist file 
+      SpreadsheetApp.getActive().toast('Data seems to be copied successfully!')
+  
+      const totaltargetlistDataRange = sourceTargetlistSheet.getRange(2, 1, sourceTargetlistSheet.getLastRow() + 1, sourceTargetlistSheet.getLastColumn()); 
+  
+      totaltargetlistDataRange.clearContent();
+  
+      updatedTargetListRange.setValues(remainingTargetListDataArray);
+  
+      SpreadsheetApp.getActive().toast('extractData function executed successfully - Alhumdulillah!'); 
 
-    const totaltargetlistDataRange = sourceTargetlistSheet.getRange(2, 1, sourceTargetlistSheet.getLastRow() + 1, sourceTargetlistSheet.getLastColumn()); 
+    } else if ( dataAdditionMethod == 'Add') {
 
-    totaltargetlistDataRange.clearContent();
+      // Add the new data after the last row of the target sheet 
 
-    updatedTargetListRange.setValues(remainingTargetListDataArray);
+      const targetSpreadSheetAddDataRange = targetSpreadSheetDataSheet.getRange(targetSpreadSheetDataSheet.getLastRow() + 1, 1, NoOfRecords, sourceTargetlistSheet.getLastColumn());
 
-    SpreadsheetApp.getActive().toast('extractData function executed successfully - Alhumdulillah!'); 
+      targetSpreadSheetAddDataRange.setValues(sourceTargetListArray);
+
+      SpreadsheetApp.getActive().toast('Data seems to be copied successfully!')
+  
+      const totaltargetlistDataRange = sourceTargetlistSheet.getRange(2, 1, sourceTargetlistSheet.getLastRow() + 1, sourceTargetlistSheet.getLastColumn()); 
+  
+      totaltargetlistDataRange.clearContent();
+  
+      updatedTargetListRange.setValues(remainingTargetListDataArray);
+  
+      SpreadsheetApp.getActive().toast('extractData function executed successfully - Alhumdulillah!'); 
+
+    }
 
 
   }
