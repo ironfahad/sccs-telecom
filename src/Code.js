@@ -49,6 +49,9 @@ function telecomEventProcessing(e) {
 
     const statusValue = fun.getEventData(e).companyStatus;
     const meetingValue = fun.getEventData(e).meetingGranted; 
+    const columnValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(1, e.range.getColumn()).getValue(); 
+    const callResponseLowerCellValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(e.range.getRow() + 1, e.range.getColumn()).getValue(); 
+
     Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}`); // verified 
 
     // Execute conditional statements 
@@ -79,7 +82,33 @@ function telecomEventProcessing(e) {
         fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
 
-    } else {
+    } else if( columnValue == 'Call Response' && callResponseLowerCellValue.length == 0) {
+
+        
+
+        // Find the campaign ID associated with current user 
+
+        // Get the operations sheet of the strategic department 
+
+        // Get the cell containing the URL of the duplicate target list 
+
+        // Extract the file ID of the duplicate target list 
+
+        // Get the Source Data 
+
+        // Get the target Data 
+
+        // Delete 25 records from the target sheet 
+
+        // Copy 25 records to the target sheet 
+
+        // Delete 25 records from the duplicate target list sheet 
+
+
+
+    }
+    
+    else {
 
         SpreadsheetApp.getActive().toast('No condition satisfied!'); 
     }; 
