@@ -84,7 +84,16 @@ function telecomEventProcessing(e) {
 
     } else if( columnValue == 'Call Response' && callResponseLowerCellValue.length == 0) {
 
-        
+        const SpreadSheetName = SpreadsheetApp.getActiveSpreadsheet().getName(); 
+        const SpreadSheetNameArray = SpreadSheetName.split('-'); 
+        const campaignId = SpreadSheetNameArray[4]; 
+        const employeeId = SpreadSheetNameArray[3]; 
+
+        Logger.log(`the campaign ID is ${campaignId} & the employee id is ${employeeId}`); 
+
+        fun.extractData(campaignId, 10); 
+
+
 
         // Find the campaign ID associated with current user 
 
@@ -104,11 +113,7 @@ function telecomEventProcessing(e) {
 
         // Delete 25 records from the duplicate target list sheet 
 
-
-
-    }
-    
-    else {
+    } else {
 
         SpreadsheetApp.getActive().toast('No condition satisfied!'); 
     }; 

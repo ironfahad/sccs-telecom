@@ -626,6 +626,82 @@ const fun = {
 
     
 
+  }, extractData: function (projectId, NoOfRecords) {
+
+    // Find the project row array
+
+    SpreadsheetApp.getActive().toast('Extract Data function activated successfully!'); 
+
+    const strategicOperationsSheet = resources.strategicSS().operationsSheet; 
+    const strategicOperationsSheetRange = strategicOperationsSheet.getRange(2, 1, strategicOperationsSheet.getLastRow() - 1, strategicOperationsSheet.getLastColumn()); 
+    const strategicOperationsSheetArray = strategicOperationsSheetRange.getValues(); 
+
+    const projectRowArray = strategicOperationsSheetArray.filter(project => {
+
+      return project[0] == projectId; 
+    })
+
+    // Get the data source cell 
+
+    const indexOfProjectRowArray = strategicOperationsSheetArray.indexOf(projectRowArray[0]); 
+
+    Logger.log(`Index of project row array is ${indexOfProjectRowArray}`); 
+
+    SpreadsheetApp.getActive().toast(`Index of project row array is ${indexOfProjectRowArray}`);
+    
+    const projectTargetListCellRange = strategicOperationsSheet.getRange(indexOfProjectRowArray + 2, 5); 
+    const projectTargetListCellArray = projectTargetListCellRange.getFormula().split('/');
+    Logger.log('the split formula is'); 
+    Logger.log(projectTargetListCellArray); 
+
+    // Extract the file ID from the URL formula
+
+    const projectTargetListFileLinkValue = projectTargetListCellArray[5].split(','); 
+    Logger.log('The project link value array is '); 
+    Logger.log(projectTargetListFileLinkValue); 
+    const projectTargetListFileId = projectTargetListFileLinkValue[0];  
+
+    Logger.log(`The project target list file ID is ${projectTargetListFileId}`); // verified successfully! Alhumdulillah
+
+    SpreadsheetApp.getActive().toast('File Id seems to be extracted successfully!');
+
+    // Source File 
+
+    const sourceTargetlistSheet = SpreadsheetApp.openById(projectTargetListFileId).getSheetByName('Sheet1'); //verified 
+    const sourceTargetListRange = sourceTargetlistSheet.getRange(2, 1, NoOfRecords, sourceTargetlistSheet.getLastColumn()); 
+    const sourceTargetListArray = sourceTargetListRange.getValues(); 
+    const sourceTargetListTotalDataRange = sourceTargetlistSheet.getRange(2, 1, sourceTargetlistSheet.getLastRow(), sourceTargetlistSheet.getLastColumn()); 
+
+    const remainingTargetListRange = sourceTargetlistSheet.getRange(NoOfRecords + 2, 1, sourceTargetlistSheet.getLastRow() - NoOfRecords, sourceTargetlistSheet.getLastColumn()); 
+    const remainingTargetListDataArray = remainingTargetListRange.getValues(); 
+    const updatedTargetListRange = sourceTargetlistSheet.getRange(2, 1, remainingTargetListDataArray.length, remainingTargetListDataArray[0].length); 
+
+
+    // Target File
+
+    const targetFileId = SpreadsheetApp.getActiveSpreadsheet().getId(); 
+
+    const targetSpreadSheetDataSheet = SpreadsheetApp.openById(targetFileId).getSheetByName('Sheet1'); 
+    const targetSpreadSheetDataSheetRange = targetSpreadSheetDataSheet.getRange(2, 1, NoOfRecords, sourceTargetlistSheet.getLastColumn()); 
+    const targetEmployeeTelecomDataArray = targetSpreadSheetDataSheetRange.getValues(); 
+    
+
+    targetSpreadSheetDataSheetRange.setValues(sourceTargetListArray);
+
+
+    SpreadsheetApp.getActive().toast('Data seems to be copied successfully!')
+
+    // 9. delete the same records from the duplicate targetlist file 
+
+    const totaltargetlistDataRange = sourceTargetlistSheet.getRange(2, 1, sourceTargetlistSheet.getLastRow() + 1, sourceTargetlistSheet.getLastColumn()); 
+
+    totaltargetlistDataRange.clearContent();
+
+    updatedTargetListRange.setValues(remainingTargetListDataArray);
+
+    SpreadsheetApp.getActive().toast('extractData function executed successfully - Alhumdulillah!'); 
+
+
   }
 
 }; 
