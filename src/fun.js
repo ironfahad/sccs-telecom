@@ -745,31 +745,36 @@ const fun = {
 
     if( activityType == 'Call') {
 
+      const activeRowRange = this.getEventData(e).activeRowRange; 
+      const activeRowArray = activeRowRange.getValues(); 
+
       const callDataArray = []; 
+
       callDataArray[0] = Math.floor(Math.random() * 10000000000); 
-      callDataArray[1] = fun.getEventData(e).companyID; 
-      callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
-      callDataArray[3] = fun.getEventData(e).companyLandline; 
-      callDataArray[4] = fun.getEventData(e).companyPersonName; 
-      callDataArray[5] = fun.getEventData(e).companyName; 
-      callDataArray[6] = fun.getEventData(e).remarks; 
-      callDataArray[7] = fun.getEventData(e).needProductData; 
+      callDataArray[1] = activeRowArray[0][0]; // company ID 
+      callDataArray[2] = activeRowArray[0][5]; // cell phone number 
+      callDataArray[3] = activeRowArray[0][6]; // company landline number 
+      callDataArray[4] = activeRowArray[0][4]; // person name 
+      callDataArray[5] = activeRowArray[0][1]; // company name 
+      callDataArray[6] = activeRowArray[0][23]; // remarks - for history purpose 
+      callDataArray[7] = activeRowArray[0][19]; // need product data
       callDataArray[8] = 'Outbound'; 
       callDataArray[9] = '';
       callDataArray[10] = '';
       callDataArray[11] = '';
       callDataArray[12] = '';
       callDataArray[13] = ''; 
-      callDataArray[14] = fun.getEventData(e).followUpStatus; 
-      callDataArray[15] = fun.getEventData(e).callBackDate; 
-      callDataArray[16] = fun.getEventData(e).callBackTime; 
-      callDataArray[17] = fun.getEventData(e).negativeCounterScore + 1;  
+      callDataArray[14] = activeRowArray[0][25]; // follow up status 
+      callDataArray[15] = new Date(activityDate).toDateString(); 
+      callDataArray[16] = new Date(activityDate).toLocaleTimeString('en-US'); 
+      callDataArray[17] = activeRowArray[0][28] + 1; // negative counter score 
+      
 
       Logger.log('the Call Data array is'); 
       Logger.log(callDataArray); 
 
       callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
-      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
+      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 16, ascending: true }, { column: 17, ascending: true}]);
 
 
     } else if (activityType == 'Meeting') {

@@ -46,13 +46,18 @@ function checkAuthorization() {
 function telecomEventProcessing(e) {
 
     //Get the value of status from the current row 
+    const activeRowArray = fun.getEventData(e).activeDataRowArray; 
+    Logger.log('The active data row array is '); 
+    Logger.log(activeRowArray); 
 
-    const statusValue = fun.getEventData(e).companyStatus;
-    const meetingValue = fun.getEventData(e).meetingGranted; 
+    const statusValue = activeRowArray[0][22]; // status value 
+    const meetingValue = activeRowArray[0][15]; // meeting value
+    const callResponse = activeRowArray[0][8]; // call response 
+    const negativeCounterScore = activeRowArray[0][28]; // negative score counter 
     const columnValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(1, e.range.getColumn()).getValue(); 
     const companyIdLowerCellValue = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1').getRange(e.range.getRow() + 1, 1).getValue(); 
 
-    Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}`); // verified 
+    Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}, and call response value is ${callResponse} and the negative score counter is ${negativeCounterScore}`); // verified 
 
     // Execute conditional statements 
 
@@ -94,29 +99,31 @@ function telecomEventProcessing(e) {
         fun.extractData(campaignId, 10, 'Add'); 
 
 
-    } else if ( fun.getEventData(e).callResponse == 'Busy' && fun.getEventData(e).negativeCounterScore < 3) {
+    } else if ( callResponse == 'Busy' && negativeCounterScore < 3) {
 
         // Reschedule a new call the next day & add 1 score to negative counter score
 
         SpreadsheetApp.getActive().toast('Busy Call detected successfully!'); 
 
-        fun.rescheduleActivity('Call', e); 
+        const newCallDate = Date.now() + 1 * 24 * 3600 * 1000; // This should give next day's date 
+
+        fun.rescheduleActivity('Call', e, newCallDate); 
 
         SpreadsheetApp.getActive().toast('Busy Call activity completed successfully! Alhumdulillah!');
 
-    } else if ( fun.getEventData(e).callResponse == 'Not Answering' && fun.getEventData(e).negativeCounterScore < 3) {
+    } else if ( callResponse == 'Not Answering' && negativeCounterScore < 3) {
         
         // Reschedule call after 3 days & add 1 score to negative counter score
 
-    } else if( fun.getEventData(e).callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back Later' && fun.getEventData(e).negativeCounterScore < 3) {
+    } else if( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back Later' && fun.getEventData(e).negativeCounterScore < 3) {
 
         // Reschedule call after 3 days & add 1 score to negative counter score
 
-    } else if ( fun.getEventData(e).callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back in Specific Time') {
+    } else if ( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back in Specific Time') {
 
         // Reschedule call at the specific date & time and reduce 1 score from the negative counter score 
 
-    } else if ( fun.getEventData(e).negativeCounterScore == '3') {
+    } else if ( negativeCounterScore == '3') {
 
         // select the active row range and grey that contact out 
     }
