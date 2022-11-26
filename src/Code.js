@@ -94,26 +94,34 @@ function telecomEventProcessing(e) {
         fun.extractData(campaignId, 10, 'Add'); 
 
 
+    } else if ( fun.getEventData(e).callResponse == 'Busy' && fun.getEventData(e).negativeCounterScore < 3) {
 
-        // Find the campaign ID associated with current user 
+        // Reschedule a new call the next day & add 1 score to negative counter score
 
-        // Get the operations sheet of the strategic department 
+        SpreadsheetApp.getActive().toast('Busy Call detected successfully!'); 
 
-        // Get the cell containing the URL of the duplicate target list 
+        fun.rescheduleActivity('Call', e); 
 
-        // Extract the file ID of the duplicate target list 
+        SpreadsheetApp.getActive().toast('Busy Call activity completed successfully! Alhumdulillah!');
 
-        // Get the Source Data 
+    } else if ( fun.getEventData(e).callResponse == 'Not Answering' && fun.getEventData(e).negativeCounterScore < 3) {
+        
+        // Reschedule call after 3 days & add 1 score to negative counter score
 
-        // Get the target Data 
+    } else if( fun.getEventData(e).callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back Later' && fun.getEventData(e).negativeCounterScore < 3) {
 
-        // Delete 25 records from the target sheet 
+        // Reschedule call after 3 days & add 1 score to negative counter score
 
-        // Copy 25 records to the target sheet 
+    } else if ( fun.getEventData(e).callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back in Specific Time') {
 
-        // Delete 25 records from the duplicate target list sheet 
+        // Reschedule call at the specific date & time and reduce 1 score from the negative counter score 
 
-    } else {
+    } else if ( fun.getEventData(e).negativeCounterScore == '3') {
+
+        // select the active row range and grey that contact out 
+    }
+    
+    else {
 
         SpreadsheetApp.getActive().toast('No condition satisfied!'); 
     }; 

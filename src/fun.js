@@ -235,7 +235,13 @@ const fun = {
     const specificPackageInquiry = activeDataRowArray[0][21];
     const companyStatus = activeDataRowArray[0][22];
     const remarks = activeDataRowArray[0][23];
-    const competitionType = activeDataRowArray[0][24]; 
+    const competitionType = activeDataRowArray[0][24];
+    const followUpStatus = activeDataRowArray[0][25];
+    const callBackDate = activeDataRowArray[0][26];
+    const callBackTime = activeDataRowArray[0][27];
+    const negativeCounterScore = activeDataRowArray[0][28];
+
+
 
     Logger.log('Event Object Executed Successfully'); 
 
@@ -727,6 +733,56 @@ const fun = {
     }
 
 
+  }, rescheduleActivity: function (activityType, e, activityDate, ActivityTime) {
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet(); 
+    const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
+    const callsSheet = ss.getSheetByName('Calls'); 
+    const meetingsSheet = ss.getSheetByName('Meetings'); 
+    const tasksSheet = ss.getSheetByName('tasks'); 
+
+
+
+    if( activityType == 'Call') {
+
+      const callDataArray = []; 
+      callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+      callDataArray[1] = fun.getEventData(e).companyID; 
+      callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
+      callDataArray[3] = fun.getEventData(e).companyLandline; 
+      callDataArray[4] = fun.getEventData(e).companyPersonName; 
+      callDataArray[5] = fun.getEventData(e).companyName; 
+      callDataArray[6] = fun.getEventData(e).remarks; 
+      callDataArray[7] = fun.getEventData(e).needProductData; 
+      callDataArray[8] = 'Outbound'; 
+      callDataArray[9] = '';
+      callDataArray[10] = '';
+      callDataArray[11] = '';
+      callDataArray[12] = '';
+      callDataArray[13] = ''; 
+      callDataArray[14] = fun.getEventData(e).followUpStatus; 
+      callDataArray[15] = fun.getEventData(e).callBackDate; 
+      callDataArray[16] = fun.getEventData(e).callBackTime; 
+      callDataArray[17] = fun.getEventData(e).negativeCounterScore + 1;  
+
+      Logger.log('the Call Data array is'); 
+      Logger.log(callDataArray); 
+
+      callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
+      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
+
+
+    } else if (activityType == 'Meeting') {
+
+
+    } else if (activityType == 'Task') {
+
+
+    } else {
+
+      SpreadsheetApp.getActive().toast('You have mentioned an invalid activity')
+
+    }; 
   }
 
 }; 
