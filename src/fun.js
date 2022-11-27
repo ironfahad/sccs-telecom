@@ -736,14 +736,15 @@ const fun = {
   }, rescheduleActivity: function (activityType, e, activityDate, ActivityTime, callResponse) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet(); 
-    const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
+    const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const activeSheetName = activeSheet.getName();  
     const callsSheet = ss.getSheetByName('Calls'); 
     const meetingsSheet = ss.getSheetByName('Meetings'); 
     const tasksSheet = ss.getSheetByName('tasks'); 
 
 
 
-    if( activityType == 'Call') {
+    if( activityType == 'Call' && activeSheetName == 'Sheet1') {
 
       const activeRowRange = this.getEventData(e).activeRowRange; 
       const activeRowArray = activeRowRange.getValues(); 
@@ -759,28 +760,69 @@ const fun = {
       callDataArray[3] = activeRowArray[0][6]; // company landline number 
       callDataArray[4] = activeRowArray[0][4]; // person name 
       callDataArray[5] = activeRowArray[0][1]; // company name 
-      callDataArray[6] = callResponse; 
-      callDataArray[7] = activeRowArray[0][19]; // need product data
-      callDataArray[8] = 'Outbound'; 
-      callDataArray[9] = '';
-      callDataArray[10] = '';
+      callDataArray[6] = callResponse; // Call History 
+      callDataArray[7] = ''; 
+      callDataArray[8] = ''; 
+      callDataArray[9] = activeRowArray[0][19]; // need product data
+      callDataArray[10] = 'Outbound'; 
       callDataArray[11] = '';
       callDataArray[12] = '';
-      callDataArray[13] = ''; 
-      callDataArray[14] = activeRowArray[0][25]; // follow up status 
-      callDataArray[15] = new Date(activityDate).toDateString(); 
-      callDataArray[16] = new Date(activityDate).toLocaleTimeString('en-US'); 
-      callDataArray[17] = activeRowArray[0][28] + 1; // negative counter score 
+      callDataArray[13] = '';
+      callDataArray[14] = '';
+      callDataArray[15] = ''; 
+      callDataArray[16] = 'Planned'; // follow up status 
+      callDataArray[17] = new Date(activityDate).toDateString(); 
+      callDataArray[18] = new Date(activityDate).toLocaleTimeString('en-US'); 
+      callDataArray[19] = activeRowArray[0][28] + 1; // negative counter score 
       
 
       Logger.log('the Call Data array is'); 
       Logger.log(callDataArray); 
 
       callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
-      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 16, ascending: true }, { column: 17, ascending: true}]);
+      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
 
 
-    } else if (activityType == 'Meeting') {
+    } else if (activityType == 'Call' && activeSheetName == 'Calls') {
+
+      const activeRowRange = this.getEventData(e).activeRowRange; // Now the event is occuring in Calls Sheet 
+      const activeRowArray = activeRowRange.getValues(); 
+      const followUpStatusRange = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(e.range.getRow(), 17); 
+
+      followUpStatusRange.setValue('Held'); 
+
+      const historyData = ''; 
+
+
+      const callDataArray = []; 
+
+      callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+      callDataArray[1] = activeRowArray[0][1]; // company ID 
+      callDataArray[2] = activeRowArray[0][2]; // cell phone number 
+      callDataArray[3] = activeRowArray[0][3]; // company landline number 
+      callDataArray[4] = activeRowArray[0][4]; // person name 
+      callDataArray[5] = activeRowArray[0][5]; // company name 
+      callDataArray[6] = callResponse; // Call History 
+      callDataArray[7] = ''; // call response 
+      callDataArray[8] = ''; // client response 
+      callDataArray[9] = ''; // product interest
+      callDataArray[10] = 'Outbound'; 
+      callDataArray[11] = ''; // meeting granted 
+      callDataArray[12] = ''; // meeting date 
+      callDataArray[13] = ''; // meeting time 
+      callDataArray[14] = ''; // status 
+      callDataArray[15] = ''; // remarks 
+      callDataArray[16] = 'Planned'; // follow up status 
+      callDataArray[17] = new Date(activityDate).toDateString(); 
+      callDataArray[18] = new Date(activityDate).toLocaleTimeString('en-US'); 
+      callDataArray[19] = activeRowArray[0][19] + 1; // negative counter score 
+      
+
+      Logger.log('the Call Data array is'); 
+      Logger.log(callDataArray); 
+
+      callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
+      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
 
 
     } else if (activityType == 'Task') {
