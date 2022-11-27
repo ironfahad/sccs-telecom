@@ -733,7 +733,7 @@ const fun = {
     }
 
 
-  }, rescheduleActivity: function (activityType, e, activityDate, ActivityTime) {
+  }, rescheduleActivity: function (activityType, e, activityDate, ActivityTime, callResponse) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet(); 
     const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
@@ -748,6 +748,9 @@ const fun = {
       const activeRowRange = this.getEventData(e).activeRowRange; 
       const activeRowArray = activeRowRange.getValues(); 
 
+      const historyData = ''; 
+
+
       const callDataArray = []; 
 
       callDataArray[0] = Math.floor(Math.random() * 10000000000); 
@@ -756,7 +759,7 @@ const fun = {
       callDataArray[3] = activeRowArray[0][6]; // company landline number 
       callDataArray[4] = activeRowArray[0][4]; // person name 
       callDataArray[5] = activeRowArray[0][1]; // company name 
-      callDataArray[6] = activeRowArray[0][23]; // remarks - for history purpose 
+      callDataArray[6] = callResponse; 
       callDataArray[7] = activeRowArray[0][19]; // need product data
       callDataArray[8] = 'Outbound'; 
       callDataArray[9] = '';

@@ -107,6 +107,8 @@ function telecomEventProcessing(e) {
 
         const newCallDate = Date.now() + 1 * 24 * 3600 * 1000; // This should give next day's date 
 
+        Logger.log(`the new call date is ${newCallDate}`); 
+
         fun.rescheduleActivity('Call', e, newCallDate); 
 
         SpreadsheetApp.getActive().toast('Busy Call activity completed successfully! Alhumdulillah!');
@@ -115,17 +117,47 @@ function telecomEventProcessing(e) {
         
         // Reschedule call after 3 days & add 1 score to negative counter score
 
+        SpreadsheetApp.getActive().toast('Not Answering Call detected successfully!'); 
+
+        const newCallDate = Date.now() + 3 * 24 * 3600 * 1000; // This should give next day's date 
+
+        fun.rescheduleActivity('Call', e, newCallDate, '', callResponse); 
+
+        SpreadsheetApp.getActive().toast('Not Answering Call activity completed successfully! Alhumdulillah!');
+
     } else if( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back Later' && fun.getEventData(e).negativeCounterScore < 3) {
 
         // Reschedule call after 3 days & add 1 score to negative counter score
+
+        SpreadsheetApp.getActive().toast('Call Back Later detected successfully!'); 
+
+        const newCallDate = Date.now() + 3 * 24 * 3600 * 1000; // This should give next day's date 
+
+        fun.rescheduleActivity('Call', e, newCallDate); 
+
+        SpreadsheetApp.getActive().toast('Call Back Later activity completed successfully! Alhumdulillah!');
 
     } else if ( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back in Specific Time') {
 
         // Reschedule call at the specific date & time and reduce 1 score from the negative counter score 
 
+        const personCallBackDate = ''; 
+        const personCallBackTime = ''; 
+
+        fun.rescheduleActivity('Call', e, personCallBackDate, personCallBackTime); 
+
+        SpreadsheetApp.getActive().toast('Call Back in specific date and time activated successfully!'); 
+
     } else if ( negativeCounterScore == '3') {
 
         // select the active row range and grey that contact out 
+
+        const activeRowSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
+        const activeRowRange = activeRowSheet.getRange(e.range.getRow(), 1, 1, activeRowSheet.getLastColumn()); 
+
+        activeRowRange.setBackground('grey').setFontStyle('italic'); 
+
+        
     }
     
     else {
