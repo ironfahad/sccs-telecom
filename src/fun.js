@@ -792,7 +792,29 @@ const fun = {
       const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
       const followUpStatusRange = activeSheet.getRange(e.range.getRow(), 17); 
 
-      followUpStatusRange.setValue('Held'); 
+      // Conditional statements for followup status update!
+
+      if (callResponse == 'Busy' || callResponse == 'Not Answering') {
+
+        SpreadsheetApp.getActive().toast('Not held status detected based on condition!'); 
+
+        followUpStatusRange.setValue('Not Held'); 
+
+
+      } else if ( callResponse == 'Busy' && negativeCounterScore == 4) {
+
+        SpreadsheetApp.getActive().toast('Dead company detected!');
+
+        followUpStatusRange.setValue('Dead'); 
+
+
+      } else {
+
+        followUpStatusRange.setValue('Held'); 
+
+      }; 
+
+      
 
       const existingHistoryValue = activeSheet.getRange(e.range.getRow(), 7).getValue(); 
       Logger.log(`history value is ${existingHistoryValue}`); 
@@ -802,17 +824,10 @@ const fun = {
       Logger.log('array length'); 
       Logger.log(existingHistoryValueArray.length);
 
-      // let lastNumberInHistoryValue = +existingHistoryValueArray[existingHistoryValueArray.length - 2]; 
-      // Logger.log('Last number of history value array is '); 
-      // Logger.log(lastNumberInHistoryValue); 
-      // const newHistoryNumber = lastNumberInHistoryValue + 1;  
-
       existingHistoryValueArray.push(callResponse); 
       Logger.log(existingHistoryValueArray); 
       const newStringofHistory = existingHistoryValueArray.join(" - "); 
       Logger.log(newStringofHistory); 
-
-      const historyData = ''; 
 
 
       const callDataArray = []; 
