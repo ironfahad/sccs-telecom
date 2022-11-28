@@ -744,12 +744,14 @@ const fun = {
 
 
 
+
+
     if( activityType == 'Call' && activeSheetName == 'Sheet1') {
 
       const activeRowRange = this.getEventData(e).activeRowRange; 
       const activeRowArray = activeRowRange.getValues(); 
 
-      const historyData = ''; 
+      const historyData = callResponse; 
 
 
       const callDataArray = []; 
@@ -760,7 +762,7 @@ const fun = {
       callDataArray[3] = activeRowArray[0][6]; // company landline number 
       callDataArray[4] = activeRowArray[0][4]; // person name 
       callDataArray[5] = activeRowArray[0][1]; // company name 
-      callDataArray[6] = callResponse; // Call History 
+      callDataArray[6] = historyData; // Call History 
       callDataArray[7] = ''; 
       callDataArray[8] = ''; 
       callDataArray[9] = activeRowArray[0][19]; // need product data
@@ -787,9 +789,28 @@ const fun = {
 
       const activeRowRange = this.getEventData(e).activeRowRange; // Now the event is occuring in Calls Sheet 
       const activeRowArray = activeRowRange.getValues(); 
-      const followUpStatusRange = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(e.range.getRow(), 17); 
+      const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
+      const followUpStatusRange = activeSheet.getRange(e.range.getRow(), 17); 
 
       followUpStatusRange.setValue('Held'); 
+
+      const existingHistoryValue = activeSheet.getRange(e.range.getRow(), 7).getValue(); 
+      Logger.log(`history value is ${existingHistoryValue}`); 
+      const existingHistoryValueArray = existingHistoryValue.split('-'); 
+      Logger.log('History value array is ');
+      Logger.log(existingHistoryValueArray)
+      Logger.log('array length'); 
+      Logger.log(existingHistoryValueArray.length);
+
+      // let lastNumberInHistoryValue = +existingHistoryValueArray[existingHistoryValueArray.length - 2]; 
+      // Logger.log('Last number of history value array is '); 
+      // Logger.log(lastNumberInHistoryValue); 
+      // const newHistoryNumber = lastNumberInHistoryValue + 1;  
+
+      existingHistoryValueArray.push(callResponse); 
+      Logger.log(existingHistoryValueArray); 
+      const newStringofHistory = existingHistoryValueArray.join(" - "); 
+      Logger.log(newStringofHistory); 
 
       const historyData = ''; 
 
@@ -802,7 +823,7 @@ const fun = {
       callDataArray[3] = activeRowArray[0][3]; // company landline number 
       callDataArray[4] = activeRowArray[0][4]; // person name 
       callDataArray[5] = activeRowArray[0][5]; // company name 
-      callDataArray[6] = callResponse; // Call History 
+      callDataArray[6] = newStringofHistory; // Call History 
       callDataArray[7] = ''; // call response 
       callDataArray[8] = ''; // client response 
       callDataArray[9] = ''; // product interest
