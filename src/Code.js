@@ -36,10 +36,37 @@ function checkAuthorization() {
     var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
     var status = authInfo.getAuthorizationStatus();
     url = authInfo.getAuthorizationUrl();
-    editTrigger1(); 
-    
+
+    const allTriggers = ScriptApp.getProjectTriggers(); 
+
+    const triggerTypes = []; 
+
+    allTriggers.forEach( trigger => {
+
+        const typeOfTrigger = trigger.getEventType(); 
+        triggerTypes.push(typeOfTrigger); 
+
+    }); 
+
+    if ( triggerTypes[0] != 'ON_EDIT') {
+
+        editTrigger1();
+        Logger.log('on edit trigger installed based on negative condition!'); 
+        Logger.log(triggerTypes[0]); 
+
+    } else {
+
+        Logger.log('No additional trigger installed as they are already installed'); 
+        
+        Logger.log(triggerTypes[0]);
+
+    }
+
     Logger.log(status); 
 
+    Logger.log(allTriggers); 
+
+    Logger.log(triggerTypes); 
 }
 
 

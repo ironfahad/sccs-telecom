@@ -795,8 +795,9 @@ const fun = {
       const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
       const followUpStatusRange = activeSheet.getRange(e.range.getRow(), 17); 
       const callsSheetNegativeCounter = activeRowArray[0][19]; 
+      let callSheetFollowUpStatus = ''; 
 
-      // Conditional statements for followup status update!
+      // Conditional statements for followup status update! - On only those follow-up
 
       if ((callResponse == 'Busy' || callResponse == 'Not Answering') && callsSheetNegativeCounter < 4) {
 
@@ -810,15 +811,17 @@ const fun = {
         SpreadsheetApp.getActive().toast('Dead company detected!');
 
         followUpStatusRange.setValue('Dead'); 
-
         
-
 
       } else {
 
         followUpStatusRange.setValue('Held'); 
+        
+        
 
       }; 
+
+      callSheetFollowUpStatus = followUpStatusRange.getValue(); // Lets test this 
 
       // Call history processing algorithm... 
 
@@ -832,10 +835,10 @@ const fun = {
 
       existingHistoryValueArray.push(callResponse); 
       Logger.log(existingHistoryValueArray); 
-      const newStringofHistory = existingHistoryValueArray.join(" - "); 
+      const newStringofHistory = existingHistoryValueArray.join("-"); 
       Logger.log(newStringofHistory); 
 
-      if (callsSheetNegativeCounter < 4){ 
+      if (callsSheetNegativeCounter < 4) { 
 
         const callDataArray = []; 
 
@@ -865,12 +868,17 @@ const fun = {
       Logger.log(callDataArray); 
 
       callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
-      callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
+       
+    }
 
-      }
+    const activityHistorySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('activityhistory'); 
+    const activityHistorySheetLastRowRange = activityHistorySheet.getRange(activityHistorySheet.getLastRow() + 1, 1, 1, activeRowArray[0].length); 
+    activeRowArray[0][16] = callSheetFollowUpStatus; 
+    activityHistorySheetLastRowRange.setValues(activeRowArray); 
+    activeRowRange.clearContent(); 
+    callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
 
-
-      
+  
 
     } else if (activityType == 'Task') {
 
