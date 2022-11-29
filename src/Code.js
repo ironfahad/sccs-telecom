@@ -55,6 +55,7 @@ function telecomEventProcessing(e) {
     const callResponse = activeRowArray[0][8]; // call response 
     const negativeCounterScore = activeRowArray[0][28]; // negative score counter
     const callSheetNegativeCounterScore = activeRowArray[0][19]; // negative score counter for call sheet 
+    Logger.log(`Calls sheet negative counter score is ${callSheetNegativeCounterScore}`); 
     const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();  
     const activeSheetName = activeSheet.getName(); 
     const columnValue = activeSheet.getRange(1, e.range.getColumn()).getValue(); 
@@ -186,6 +187,19 @@ function telecomEventProcessing(e) {
         fun.rescheduleActivity('Call', e, newCallDate, '', currentCellValue); 
 
         SpreadsheetApp.getActive().toast('Not Answering Call activity completed successfully! Alhumdulillah!');
+
+    } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && (currentCellValue == 'Not Answering' || currentCellValue == 'Busy') && callSheetNegativeCounterScore == 4 ) {
+
+        SpreadsheetApp.getActive().toast('Call Sheet Call Response Not Answering Value detected successfully !'); 
+        Logger.log('Dead call with not answering or busy response detected successfully!'); 
+
+        const newCallDate = Date.now(); // This should give today's date
+
+        Logger.log(`the new call date is ${newCallDate}`); 
+
+        fun.rescheduleActivity('Call', e, newCallDate, '', currentCellValue); 
+
+        SpreadsheetApp.getActive().toast('Dead call related to Not Answering Call activity completed successfully! Alhumdulillah!');
 
     } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Invalid Number' ) {
 

@@ -741,6 +741,7 @@ const fun = {
     const callsSheet = ss.getSheetByName('Calls'); 
     const meetingsSheet = ss.getSheetByName('Meetings'); 
     const tasksSheet = ss.getSheetByName('tasks'); 
+    
 
 
 
@@ -787,25 +788,30 @@ const fun = {
 
     } else if (activityType == 'Call' && activeSheetName == 'Calls') {
 
+      // All operations related to calls sheet 
+
       const activeRowRange = this.getEventData(e).activeRowRange; // Now the event is occuring in Calls Sheet 
       const activeRowArray = activeRowRange.getValues(); 
       const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
       const followUpStatusRange = activeSheet.getRange(e.range.getRow(), 17); 
+      const callsSheetNegativeCounter = activeRowArray[0][19]; 
 
       // Conditional statements for followup status update!
 
-      if (callResponse == 'Busy' || callResponse == 'Not Answering') {
+      if ((callResponse == 'Busy' || callResponse == 'Not Answering') && callsSheetNegativeCounter < 4) {
 
         SpreadsheetApp.getActive().toast('Not held status detected based on condition!'); 
 
         followUpStatusRange.setValue('Not Held'); 
 
 
-      } else if ( callResponse == 'Busy' && negativeCounterScore == 4) {
+      } else if ( (callResponse == 'Busy' || callResponse == 'Not Answering') && callsSheetNegativeCounter == 4) {
 
         SpreadsheetApp.getActive().toast('Dead company detected!');
 
         followUpStatusRange.setValue('Dead'); 
+
+        
 
 
       } else {
@@ -814,7 +820,7 @@ const fun = {
 
       }; 
 
-      
+      // Call history processing algorithm... 
 
       const existingHistoryValue = activeSheet.getRange(e.range.getRow(), 7).getValue(); 
       Logger.log(`history value is ${existingHistoryValue}`); 
@@ -829,8 +835,9 @@ const fun = {
       const newStringofHistory = existingHistoryValueArray.join(" - "); 
       Logger.log(newStringofHistory); 
 
+      if (callsSheetNegativeCounter < 4){ 
 
-      const callDataArray = []; 
+        const callDataArray = []; 
 
       callDataArray[0] = Math.floor(Math.random() * 10000000000); 
       callDataArray[1] = activeRowArray[0][1]; // company ID 
@@ -860,6 +867,10 @@ const fun = {
       callsSheet.getRange(callsSheet.getLastRow() + 1, 1, 1, callsSheet.getLastColumn()).setValues([callDataArray]);     
       callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
 
+      }
+
+
+      
 
     } else if (activityType == 'Task') {
 
