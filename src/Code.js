@@ -115,6 +115,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('Lead'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
     
 
@@ -131,6 +132,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('Strong Opportunity'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if ( activeSheetName == 'Sheet1' && statusValue == 'Opportunity' && meetingValue.length == 0 ) {
@@ -143,7 +145,8 @@ function telecomEventProcessing(e) {
         // Highlight the row according to status value 
 
         statusValueCellRange.setValue('Opportunity'); 
-        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany);
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status! 
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && IdLowerCellValue.length == 0) {
@@ -176,6 +179,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Not Answering' && negativeCounterScore < 3) {
@@ -194,6 +198,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
 
@@ -213,6 +218,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if ( activeSheetName == 'Sheet1' && callResponse == 'Picked Up' && followUpStatus == 'Call Back in Specific Time') {
@@ -230,6 +236,7 @@ function telecomEventProcessing(e) {
 
         statusValueCellRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && currentCellValue == 'Busy' && callSheetNegativeCounterScore < 4) {
@@ -248,6 +255,7 @@ function telecomEventProcessing(e) {
 
         callsSheetStatusCellValueRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
 
 
@@ -267,6 +275,7 @@ function telecomEventProcessing(e) {
 
         callsSheetStatusCellValueRange.setValue('In Progress'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
 
 
@@ -287,6 +296,7 @@ function telecomEventProcessing(e) {
 
         callsSheetStatusCellValueRange.setValue('Unresponsive'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
 
 
@@ -309,7 +319,8 @@ function telecomEventProcessing(e) {
 
         // Update status highlighting to grey and strike through
 
-        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), 'Sheet1', idOfCompany); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), 'Sheet1', idOfCompany);
+        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status! 
 
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue); 
 

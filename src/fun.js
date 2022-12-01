@@ -909,10 +909,9 @@ const fun = {
 
     } else if ( rowStatus === "In Progress") {
       targetRange
-      .setBackground("#f37735")
+      .setBackground("#ffe28a")
       .setFontStyle("bold")
-      .setFontStyle("italic")
-      .setFontColor("white")
+      .setFontColor("#666547")
       .setFontFamily("Ropa Sans")
       .setHorizontalAlignment("center")
     } else if (rowStatus === "Call Back Later") {
