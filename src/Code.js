@@ -76,25 +76,33 @@ function telecomEventProcessing(e) {
     const activeRowArray = fun.getEventData(e).activeDataRowArray; 
     Logger.log('The active data row array is '); 
     Logger.log(activeRowArray); 
+    const idOfCompany = activeRowArray[0][0]; 
 
-    const statusValue = activeRowArray[0][22]; // status value 
+    let statusValue = activeRowArray[0][22]; // status value 
     const meetingValue = activeRowArray[0][15]; // meeting value
-    const callResponse = activeRowArray[0][8]; // call response 
-    const negativeCounterScore = activeRowArray[0][28]; // negative score counter
+    const callResponse = activeRowArray[0][8]; // call response
+    let followUpStatus = activeRowArray[0][25]; 
+    let negativeCounterScore = activeRowArray[0][28]; // negative score counter
     const callSheetNegativeCounterScore = activeRowArray[0][19]; // negative score counter for call sheet 
+    const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
     Logger.log(`Calls sheet negative counter score is ${callSheetNegativeCounterScore}`); 
-    const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();  
+    const activeSheet = activeSpreadsheet.getActiveSheet();  
+    const negativeCounterScoreCellRange = activeSheet.getRange(e.range.getRow(), 29); 
+    const statusValueCellRange = activeSheet.getRange(e.range.getRow(), 23); 
+    const callsSheetStatusCellValueRange = activeSheet.getRange(e.range.getRow(), 15); 
+    const callsSheetStatusCellValue = callsSheetStatusCellValueRange.getValue(); 
     const activeSheetName = activeSheet.getName(); 
     const columnValue = activeSheet.getRange(1, e.range.getColumn()).getValue(); 
     const currentCellValue = activeSheet.getRange(e.range.getRow(), e.range.getColumn()).getValue(); 
     const currentCellRange = activeSheet.getRange(e.range.getRow(), e.range.getColumn()); 
     const IdLowerCellValue = activeSheet.getRange(e.range.getRow() + 1, 1).getValue(); 
+    
 
     Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}, and call response value is ${callResponse} and the negative score counter is ${negativeCounterScore}`); // verified 
 
     // Execute conditional statements 
 
-    if(currentCellValue == 'Lead' && meetingValue.length == 0 ) {
+    if( activeSheetName == 'Sheet1' && currentCellValue == 'Lead' && meetingValue.length == 0 ) {
 
         SpreadsheetApp.getActive().toast('Condition for lead activated successfully!'); 
 
@@ -102,9 +110,15 @@ function telecomEventProcessing(e) {
 
         fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
+
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('Lead'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
     
 
-    } else if( statusValue == 'Opportunity' && meetingValue == 'yes') {
+    } else if( activeSheetName == 'Sheet1' && statusValue == 'Opportunity' && meetingValue == 'yes') {
 
         SpreadsheetApp.getActive().toast('Condition for meeting activated successfully'); 
 
@@ -113,12 +127,24 @@ function telecomEventProcessing(e) {
         fun.loadBalancerCompany('Marketing Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Marketing Executive', fun.getEventData(e).companyID, e, 'Meeting'); 
 
-    } else if ( statusValue == 'Opportunity' && meetingValue.length == 0 ) {
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('Strong Opportunity'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
+
+    } else if ( activeSheetName == 'Sheet1' && statusValue == 'Opportunity' && meetingValue.length == 0 ) {
 
         SpreadsheetApp.getActive().toast('Condition For Opportunity with no meeting activated successfully'); 
 
         fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
         fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
+
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('Opportunity'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
     } else if( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && IdLowerCellValue.length == 0) {
 
@@ -146,6 +172,12 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Busy Call activity completed successfully! Alhumdulillah!');
 
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
+
     } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Not Answering' && negativeCounterScore < 3) {
         
         // Reschedule call after 3 days & add 1 score to negative counter score
@@ -158,7 +190,14 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Not Answering Call activity completed successfully! Alhumdulillah!');
 
-    } else if( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back Later' && fun.getEventData(e).negativeCounterScore < 3) {
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
+
+
+    } else if( activeSheetName == 'Sheet1' && callResponse == 'Picked Up' && followUpStatus == 'Call Back Later' && negativeCounterScore < 4) {
 
         // Reschedule call after 3 days & add 1 score to negative counter score
 
@@ -170,7 +209,13 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Call Back Later activity completed successfully! Alhumdulillah!');
 
-    } else if ( callResponse == 'Picked Up' && fun.getEventData(e).followUpStatus == 'Call Back in Specific Time') {
+        // Highlight the row according to status value 
+
+        statusValueCellRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
+
+    } else if ( activeSheetName == 'Sheet1' && callResponse == 'Picked Up' && followUpStatus == 'Call Back in Specific Time') {
 
         // Reschedule call at the specific date & time and reduce 1 score from the negative counter score 
 
@@ -181,16 +226,12 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Call Back in specific date and time activated successfully!'); 
 
-    } else if ( negativeCounterScore == '3') {
+        // Highlight the row according to status value 
 
-        // select the active row range and grey that contact out 
+        statusValueCellRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
-        const activeRowSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
-        const activeRowRange = activeRowSheet.getRange(e.range.getRow(), 1, 1, activeRowSheet.getLastColumn()); 
-
-        activeRowRange.setBackground('grey').setFontStyle('italic'); 
-
-        
     } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && currentCellValue == 'Busy' && callSheetNegativeCounterScore < 4) {
 
         SpreadsheetApp.getActive().toast('Call Sheet Call Response Busy Value detected successfully !')
@@ -203,6 +244,13 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Busy Call activity completed successfully! Alhumdulillah!');
 
+        // Highlight the row according to status value 
+
+        callsSheetStatusCellValueRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
+
+
     } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && currentCellValue == 'Not Answering' && callSheetNegativeCounterScore < 4 ) {
 
         SpreadsheetApp.getActive().toast('Call Sheet Call Response Not Answering Value detected successfully !')
@@ -214,6 +262,13 @@ function telecomEventProcessing(e) {
         fun.rescheduleActivity('Call', e, newCallDate, '', currentCellValue); 
 
         SpreadsheetApp.getActive().toast('Not Answering Call activity completed successfully! Alhumdulillah!');
+
+        // Highlight the row according to status value 
+
+        callsSheetStatusCellValueRange.setValue('In Progress'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
+
 
     } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && (currentCellValue == 'Not Answering' || currentCellValue == 'Busy') && callSheetNegativeCounterScore == 4 ) {
 
@@ -228,9 +283,36 @@ function telecomEventProcessing(e) {
 
         SpreadsheetApp.getActive().toast('Dead call related to Not Answering Call activity completed successfully! Alhumdulillah!');
 
+        // Highlight the row according to status value 
+
+        callsSheetStatusCellValueRange.setValue('Unresponsive'); 
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
+        fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
+
+
     } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Invalid Number' ) {
 
-        fun.highLightColor(SpreadsheetApp.getActiveSpreadsheet().getId(), 'Sheet1', e.range.getRow()); 
+        //invalid number detected successfully!
+
+        Logger.log('Invalid Number detected successfully')
+
+        // Update the negative counter score to 4 
+
+        negativeCounterScore = 4; 
+
+        statusValue = 'Unresponsive'; 
+
+        // get the range and set the value 
+
+        negativeCounterScoreCellRange.setValue(negativeCounterScore); 
+        statusValueCellRange.setValue(statusValue); 
+
+        // Update status highlighting to grey and strike through
+
+        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), 'Sheet1', idOfCompany); 
+
+        fun.setStatusHighlighting(activeSheet, targetRow, statusValue); 
+
     }
     
     else {

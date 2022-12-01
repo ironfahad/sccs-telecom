@@ -745,8 +745,6 @@ const fun = {
 
 
 
-
-
     if( activityType == 'Call' && activeSheetName == 'Sheet1') {
 
       const activeRowRange = this.getEventData(e).activeRowRange; 
@@ -875,6 +873,7 @@ const fun = {
     const activityHistorySheetLastRowRange = activityHistorySheet.getRange(activityHistorySheet.getLastRow() + 1, 1, 1, activeRowArray[0].length); 
     activeRowArray[0][16] = callSheetFollowUpStatus; 
     activityHistorySheetLastRowRange.setValues(activeRowArray); 
+
     activeRowRange.clearContent(); 
     callsSheet.getRange(2, 1, callsSheet.getLastRow() - 1, callsSheet.getLastColumn()).sort([{ column: 18, ascending: true }, { column: 17, ascending: true}]);
 
@@ -888,6 +887,95 @@ const fun = {
       SpreadsheetApp.getActive().toast('You have mentioned an invalid activity')
 
     }; 
+
+  }, setStatusHighlighting: function (Sheet, rowNum, rowStatus) {
+
+    // const targetSheet = spreadSheet.getActiveSheet(); 
+    const targetRange = Sheet.getRange(rowNum, 1, 1, Sheet.getLastColumn()); 
+    Logger.log("Status highling function in progress! ;-)")
+    Logger.log("RowStatus Value will come here") 
+    Logger.log(rowStatus); 
+    Logger.log("Row number will come here") 
+    Logger.log(rowNum); 
+    targetRange.clearFormat(); 
+
+    if (rowStatus === "Not Contacted") {
+      targetRange
+      .setBackground("white")
+      .setFontStyle('normal')
+      .setFontColor('black')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center")
+
+    } else if ( rowStatus === "In Progress") {
+      targetRange
+      .setBackground("#f37735")
+      .setFontStyle("bold")
+      .setFontStyle("italic")
+      .setFontColor("white")
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center")
+    } else if (rowStatus === "Call Back Later") {
+      targetRange
+      .setBackground("#ffc425")
+      .setFontStyle("italic")
+      .setFontColor("red")
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center"); 
+    } else if(rowStatus === "Competition Limit") {
+      targetRange
+      .setBackground("#d11141")
+      .setFontColor("white")
+      .setFontWeight('bold')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center")
+      .setFontLine('line-through'); 
+    } else if( rowStatus === "Opportunity" || rowStatus == "Strong Opportunity") {
+      targetRange
+      .setBackground("#00b159")
+      .setFontColor("white")
+      .setFontStyle("italic")
+      .setFontLine('line-through')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center");  
+    } else if(rowStatus === "Not Interested") {
+      targetRange
+      .setBackground("#aa6f73")
+      .setFontColor("white")
+      .setFontStyle("italic")
+      .setFontLine('line-through')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center"); 
+    } else if ( rowStatus === "Lead" || rowStatus == "Strong Lead" || rowStatus == "Potential Lead") {
+      targetRange
+      .setBackground("#00aedb")
+      .setFontColor('white')
+      .setFontWeight('bold')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center")
+    } else if ( rowStatus === "Responded But No Interest") {
+      targetRange
+      .setBackground('grey')
+      .setFontColor('white')
+      .setFontStyle('italic')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center");
+    } else if ( rowStatus === "Unresponsive"){
+      targetRange
+      .setBackground('grey')
+      .setFontColor('white')
+      .setFontStyle('italic')
+      .setFontFamily("Ropa Sans")
+      .setHorizontalAlignment("center")
+      .setFontLine('line-through');
+    }
+    
+    else {
+      Logger.log("No matching criteria for status highlighting found"); 
+    }; 
+
+    Logger.log("Status Highlighting successfully applied! Al Humdulillah!"); 
+
   }
 
 }; 
