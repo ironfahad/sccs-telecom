@@ -82,7 +82,9 @@ function telecomEventProcessing(e) {
     const meetingValue = activeRowArray[0][15]; // meeting value
     const callResponse = activeRowArray[0][8]; // call response
     let followUpStatus = activeRowArray[0][25]; 
+    let clientResponse = activeRowArray[0][13]; 
     let negativeCounterScore = activeRowArray[0][28]; // negative score counter
+    let callBackTime = activeRowArray[0][27]; 
     const callSheetNegativeCounterScore = activeRowArray[0][19]; // negative score counter for call sheet 
     const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
     Logger.log(`Calls sheet negative counter score is ${callSheetNegativeCounterScore}`); 
@@ -98,13 +100,13 @@ function telecomEventProcessing(e) {
     const IdLowerCellValue = activeSheet.getRange(e.range.getRow() + 1, 1).getValue(); 
     
 
-    Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}, and call response value is ${callResponse} and the negative score counter is ${negativeCounterScore}`); // verified 
+    Logger.log(`the status value is ${statusValue} & the meeting value is ${meetingValue}, and call response value is ${callResponse} and the negative score counter is ${negativeCounterScore} & the client response is ${clientResponse} & the column value is ${columnValue} & call back time is ${callBackTime}`); // verified 
 
     // Execute conditional statements 
 
-    if( activeSheetName == 'Sheet1' && currentCellValue == 'Lead' && meetingValue.length == 0 ) {
+    if( activeSheetName == 'Sheet1' && columnValue == 'Remarks' && (statusValue == 'Lead' || statusValue == 'Strong Lead' || statusValue == 'Potential Lead' || statusValue == 'Opportunity' || statusValue == 'Strong Opportunity') && callResponse == 'Call Picked Up' && (meetingValue == 'No' || meetingValue.length == 0)) {
 
-        SpreadsheetApp.getActive().toast('Condition for lead activated successfully!'); 
+        SpreadsheetApp.getActive().toast('Record detected for inside sales executive'); 
 
         // Transfer the current row record to the lowest load Inside Sales Executive 
 
@@ -113,15 +115,15 @@ function telecomEventProcessing(e) {
 
         // Highlight the row according to status value 
 
-        statusValueCellRange.setValue('Lead'); 
+        // statusValueCellRange.setValue('Lead'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
     
 
-    } else if( activeSheetName == 'Sheet1' && statusValue == 'Opportunity' && meetingValue == 'yes') {
+    } else if( activeSheetName == 'Sheet1' && columnValue == 'Remarks' && (statusValue == 'Lead' || statusValue == 'Strong Lead' || statusValue == 'Potential Lead' || statusValue == 'Opportunity' || statusValue == 'Strong Opportunity') && callResponse == 'Call Picked Up' && meetingValue == 'Yes') {
 
-        SpreadsheetApp.getActive().toast('Condition for meeting activated successfully'); 
+        SpreadsheetApp.getActive().toast('Record detected for marketing executive'); 
 
         // Transfer the current row record to the lowest load Marketing Executive 
 
@@ -130,38 +132,27 @@ function telecomEventProcessing(e) {
 
         // Highlight the row according to status value 
 
-        statusValueCellRange.setValue('Strong Opportunity'); 
+        // statusValueCellRange.setValue('Strong Opportunity'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
-    } else if ( activeSheetName == 'Sheet1' && statusValue == 'Opportunity' && meetingValue.length == 0 ) {
+    } 
+    //  else if( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && IdLowerCellValue.length == 0) {
 
-        SpreadsheetApp.getActive().toast('Condition For Opportunity with no meeting activated successfully'); 
+    //     const SpreadSheetName = SpreadsheetApp.getActiveSpreadsheet().getName(); 
+    //     const SpreadSheetNameArray = SpreadSheetName.split('-'); 
+    //     const campaignId = SpreadSheetNameArray[4]; 
+    //     const employeeId = SpreadSheetNameArray[3]; 
 
-        fun.loadBalancerCompany('Inside Sales Executive', fun.getEventData(e).companyID, e); 
-        fun.loadBalancerActivity('Inside Sales Executive', fun.getEventData(e).companyID, e, 'Call'); 
+    //     Logger.log(`the campaign ID is ${campaignId} & the employee id is ${employeeId}`); 
 
-        // Highlight the row according to status value 
-
-        statusValueCellRange.setValue('Opportunity'); 
-        const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany);
-        statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status! 
-        fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
-
-    } else if( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && IdLowerCellValue.length == 0) {
-
-        const SpreadSheetName = SpreadsheetApp.getActiveSpreadsheet().getName(); 
-        const SpreadSheetNameArray = SpreadSheetName.split('-'); 
-        const campaignId = SpreadSheetNameArray[4]; 
-        const employeeId = SpreadSheetNameArray[3]; 
-
-        Logger.log(`the campaign ID is ${campaignId} & the employee id is ${employeeId}`); 
-
-        fun.extractData(campaignId, 10, 'Add'); 
+    //     fun.extractData(campaignId, 10, 'Add'); 
 
 
-    } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Busy' && negativeCounterScore < 3 ) {
+    // } 
+    
+    else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Busy' && negativeCounterScore < 3 ) {
 
         // Reschedule a new call the next day & add 1 score to negative counter score
 
@@ -221,12 +212,16 @@ function telecomEventProcessing(e) {
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
 
-    } else if ( activeSheetName == 'Sheet1' && callResponse == 'Picked Up' && followUpStatus == 'Call Back in Specific Time') {
+    } else if ( activeSheetName == 'Sheet1' && callResponse == 'Call Picked Up' && clientResponse == 'Call Back At Specified Time' && activeRowArray[0][27].length != 0) {
+
+        SpreadsheetApp.getActive().toast('Call Back In specific time detected successfully');
 
         // Reschedule call at the specific date & time and reduce 1 score from the negative counter score 
 
-        const personCallBackDate = ''; 
-        const personCallBackTime = ''; 
+        const personCallBackDate = activeRowArray[0][26]; 
+        const personCallBackTime = activeRowArray[0][27];
+        
+        Logger.log(`The call back date is ${personCallBackDate} & the call back time is ${personCallBackTime}`); 
 
         fun.rescheduleActivity('Call', e, personCallBackDate, personCallBackTime); 
 
@@ -234,10 +229,12 @@ function telecomEventProcessing(e) {
 
         // Highlight the row according to status value 
 
-        statusValueCellRange.setValue('In Progress'); 
+        statusValueCellRange.setValue('In Progress'); // We need to update the setHighlighting function to add more status values into it!
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue);
+
+        // Starting from below all conditions are related to calls sheet - this code should gradually shift to another file for seperation of concerns
 
     } else if ( activeSheetName == 'Calls' && columnValue == 'Call Response' && currentCellValue == 'Busy' && callSheetNegativeCounterScore < 4) {
 
