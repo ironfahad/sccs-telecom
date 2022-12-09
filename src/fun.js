@@ -692,32 +692,79 @@ const fun = {
 
     } else if( typeOfActivity == 'Meeting'){
 
-      const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Meetings'); 
-      const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
+      const activeRowArray = this.getEventData(e).activeDataRowArray; 
+      const remarksHistory = activeRowArray[0][23]; 
 
-      const callDataArray = []; 
-      callDataArray[0] = Math.floor(Math.random() * 10000000000); 
-      callDataArray[1] = fun.getEventData(e).companyID; 
-      callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
-      callDataArray[3] = fun.getEventData(e).companyLandline; 
-      callDataArray[4] = fun.getEventData(e).companyPersonName; 
-      callDataArray[5] = fun.getEventData(e).companyName; 
-      callDataArray[6] = fun.getEventData(e).remarks; 
-      callDataArray[7] = fun.getEventData(e).needProductData; 
-      callDataArray[8] = 'Outbound'; 
-      callDataArray[9] = '';
-      callDataArray[10] = '';
-      callDataArray[11] = '';
-      callDataArray[12] = '';
-      callDataArray[13] = ''; 
+      const designatedEmployeeMeetingSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Meetings'); 
+      const designatedEmployeeMeetingSheetRange = designatedEmployeeMeetingSheet.getRange(designatedEmployeeMeetingSheet.getLastRow() + 1, 1, 1, designatedEmployeeMeetingSheet.getLastColumn()); 
 
-      
+      // const callDataArray = []; 
 
-      Logger.log('the Call Data array is'); 
-      Logger.log(callDataArray); 
+      // // Populate the row date for calls
 
-      designatedEmployeeCallSheetRange.setValues([callDataArray]); 
-      designatedEmployeeCallSheetRange.sort()
+      // callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+      // callDataArray[1] = fun.getEventData(e).companyID; 
+      // callDataArray[2] = fun.getEventData(e).companyPersonMobile; 
+      // callDataArray[3] = fun.getEventData(e).companyLandline; 
+      // callDataArray[4] = fun.getEventData(e).companyPersonName; 
+      // callDataArray[5] = fun.getEventData(e).companyName; 
+      // callDataArray[6] = fun.getEventData(e).remarks; 
+      // callDataArray[7] = fun.getEventData(e).needProductData; 
+      // callDataArray[8] = 'Outbound'; 
+      // callDataArray[9] = '';
+      // callDataArray[10] = '';
+      // callDataArray[11] = '';
+      // callDataArray[12] = '';
+      // callDataArray[13] = ''; 
+       
+
+      // Logger.log('the Call Data array is'); 
+      // Logger.log(callDataArray); 
+
+      // Check duplicate value
+
+      const duplicateValueCheck = this.checkDuplicateRow(activeRowArray[0][0], '' , designatedEmployeeMeetingSheet);  
+
+      Logger.log(`the duplicate value check is ${duplicateValueCheck}`); 
+      Logger.log(`the length of duplicate value check is ${duplicateValueCheck.length}`); 
+
+      // end of duplicate value check function 
+
+      if( duplicateValueCheck.length === 0) {
+
+        const callDataArray = []; 
+
+        callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+        callDataArray[1] = activeRowArray[0][0]; // company ID 
+        callDataArray[2] = activeRowArray[0][5]; // cell phone number 
+        callDataArray[3] = activeRowArray[0][6]; // company landline number 
+        callDataArray[4] = activeRowArray[0][4]; // person name 
+        callDataArray[5] = activeRowArray[0][1]; // company name 
+        callDataArray[6] = remarksHistory; // Call History 
+        callDataArray[7] = ''; 
+        callDataArray[8] = ''; 
+        callDataArray[9] = activeRowArray[0][19]; // need product data
+        callDataArray[10] = 'Outbound'; 
+        callDataArray[11] = '';
+        callDataArray[12] = '';
+        callDataArray[13] = '';
+        callDataArray[14] = '';
+        callDataArray[15] = ''; 
+        callDataArray[16] = 'Planned'; // follow up status 
+        callDataArray[17] = new Date(activeRowArray[0][16]).toDateString(); 
+        callDataArray[18] = new Date(activeRowArray[0][15]).toLocaleTimeString('en-US'); 
+        callDataArray[19] = activeRowArray[0][28] + 1; // negative counter score 
+        
+
+        Logger.log('the Call Data array is'); 
+        Logger.log(callDataArray);
+
+        designatedEmployeeMeetingSheetRange.setValues([callDataArray]);
+        designatedEmployeeMeetingSheet.getRange(2, 1, designatedEmployeeMeetingSheet.getLastRow() - 1, designatedEmployeeMeetingSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
+        // designatedEmployeeCallSheet.sort(1);  
+
+
+      }
 
 
     } else if( typeOfActivity == 'Task') {
