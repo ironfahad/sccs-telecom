@@ -79,7 +79,7 @@ function telecomEventProcessing(e) {
     const idOfCompany = activeRowArray[0][0]; 
 
     let statusValue = activeRowArray[0][22]; // status value 
-    const meetingValue = activeRowArray[0][15]; // meeting value
+    const meetingValue = activeRowArray[0][14]; // meeting value
     const callResponse = activeRowArray[0][8]; // call response
     let followUpStatus = activeRowArray[0][25]; 
     let clientResponse = activeRowArray[0][13]; 
