@@ -857,6 +857,14 @@ const fun = {
         const callDataArray = activeRowArray; 
 
         callDataArray[0][6] = newStringofHistory; 
+        callDataArray[0][7] = ''; 
+        callDataArray[0][8] = '';
+        callDataArray[0][9] = '';
+        callDataArray[0][11] = '';
+        callDataArray[0][12] = '';
+        callDataArray[0][13] = '';
+        callDataArray[0][14] = '';
+        callDataArray[0][15] = '';
 
         this.l('Active Sheet detected from telecom executive is Calls Sheet and the data is', activeRowArray); 
 
