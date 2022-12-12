@@ -81,8 +81,11 @@ function telecomEventProcessing(e) {
     let statusValue = activeRowArray[0][22]; // status value 
     const meetingValue = activeRowArray[0][14]; // meeting value
     const callResponse = activeRowArray[0][8]; // call response
+    const callSheetCallResponse = activeRowArray[0][7]; 
     let followUpStatus = activeRowArray[0][25]; 
     let clientResponse = activeRowArray[0][13]; 
+    let callSheetClientResponse = activeRowArray[0][8]; 
+    const callSheetMeetingValue = activeRowArray[0][11]; 
     let negativeCounterScore = activeRowArray[0][28]; // negative score counter
     let callBackTime = activeRowArray[0][27]; 
     const callSheetNegativeCounterScore = activeRowArray[0][19]; // negative score counter for call sheet 
@@ -283,18 +286,24 @@ function telecomEventProcessing(e) {
 
         const newCallDate = Date.now(); // This should give today's date
 
+        // Is this code transfering the record to History sheet ? check that out! 
+
         Logger.log(`the new call date is ${newCallDate}`); 
 
         fun.rescheduleActivity('Call', e, newCallDate, '', currentCellValue); 
 
         SpreadsheetApp.getActive().toast('Dead call related to Not Answering Call activity completed successfully! Alhumdulillah!');
 
-        // Highlight the row according to status value 
+        // Highlight the row with line through and color according to status value 
 
         callsSheetStatusCellValueRange.setValue('Unresponsive'); 
         const targetRow = fun.findRowNumber(activeSpreadsheet.getId(), "Sheet1", idOfCompany); 
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status!
         fun.setStatusHighlighting(activeSheet, targetRow, callsSheetStatusCellValue);
+
+        // Update Sheet1's negativeCounterScore to 4 
+
+
 
 
     } else if ( activeSheetName == 'Sheet1' && columnValue == 'Call Response' && currentCellValue == 'Invalid Number' ) {
@@ -320,6 +329,136 @@ function telecomEventProcessing(e) {
         statusValue = statusValueCellRange.getValue(); // For acquiring the updated value of the status! 
 
         fun.setStatusHighlighting(activeSheet, targetRow, statusValue); 
+
+
+    } else if ( activeSheetName == 'Calls' && columnValue == 'Remarks' && callSheetCallResponse == 'Call Picked Up' && callSheetClientResponse == 'Interested in talking') {
+
+        // reschedule call after 3 days 
+
+        SpreadsheetApp.getActive().toast('Calls Sheet call back detected successfully!');
+
+        const activityDate = Date.now() + 3 * 24 * 3600 * 1000; 
+
+        fun.rescheduleActivity('Call', e, activityDate, '', callResponse); 
+
+
+        SpreadsheetApp.getActive().toast('Calls Sheet call back completed successfully!');
+
+        // update negative counter value to +1 
+
+
+
+        // Move current call to history - I think this is done by the reschedule call function as well . 
+
+
+
+    } else if (activeSheetName == 'Calls' && columnValue == 'Call Back Time' && callSheetCallResponse == 'Call Picked Up' && (callsSheetStatusCellValue == 'Lead' || callsSheetStatusCellValue == 'Strong Lead' || callsSheetStatusCellValue == 'Potential Lead' || callsSheetStatusCellValue == 'Opportunity' || callsSheetStatusCellValue == 'Strong Opportunity') && callSheetMeetingValue == 'No') {
+
+        // Transfer record to Inside Sales Executive
+
+        const currentRowRemarks = activeRowArray[0][15]; 
+
+        fun.loadBalancerCompany('Inside Sales Executive', activeRowArray[0][0], e); 
+
+        fun.loadBalancerActivity('Inside Sales Executive', activeRowArray[0][0], e, 'Call', currentRowRemarks); 
+
+        // Update negativeCounterValue to 4 in calls sheet 
+
+        // Update negativeCounter value to 4 in sheet1 
+
+        const relatedCompanyRowNumber = fun.findRowNumber(activeSpreadsheet.getId(), 'Sheet1', activeRowArray[0][1]); 
+        const targetRowCellSheet = activeSpreadsheet.getSheetByName('Sheet1'); 
+        const negativeCounterRowCellRange = targetRowCellSheet.getRange(relatedCompanyRowNumber, targetRowCellSheet.getLastColumn());
+        const sheet1StatusCellValue = activeSheet.getRange(e.range.getRow(), 15).getValue(); 
+        // const targetRowCellValue = targetRowCellRange.getValue(); 
+
+        negativeCounterRowCellRange.setValue(4); 
+
+        // Set status highlighting with line through in sheet1 for the related company 
+
+
+        fun.setStatusHighlighting(targetRowCellSheet, relatedCompanyRowNumber, sheet1StatusCellValue); 
+
+
+
+    } else if (activeSheetName == 'Calls' && columnValue == 'Call Back Time' && callSheetCallResponse == 'Call Picked Up' && (callsSheetStatusCellValue == 'Lead' || callsSheetStatusCellValue == 'Strong Lead' || callsSheetStatusCellValue == 'Potential Lead' || callsSheetStatusCellValue == 'Opportunity' || callsSheetStatusCellValue == 'Strong Opportunity') && callSheetMeetingValue == 'Yes') {
+
+        // Transfer record to Inside Sales Executive
+
+        const currentRowRemarks = activeRowArray[0][15]; 
+
+        fun.loadBalancerCompany('Marketing Executive', activeRowArray[0][0], e); 
+
+        fun.loadBalancerActivity('Marketing Executive', activeRowArray[0][0], e, 'Call', currentRowRemarks);
+
+        // Update negativeCounterValue to 4 in calls sheet 
+
+        // Update negativeCounter value to 4 in sheet1 
+
+        const relatedCompanyRowNumber = fun.findRowNumber(activeSpreadsheet.getId(), 'Sheet1', activeRowArray[0][1]); 
+        const targetRowCellSheet = activeSpreadsheet.getSheetByName('Sheet1'); 
+        const negativeCounterRowCellRange = targetRowCellSheet.getRange(relatedCompanyRowNumber, targetRowCellSheet.getLastColumn());
+        const sheet1StatusCellValue = activeSheet.getRange(e.range.getRow(), 15).getValue(); 
+        // const targetRowCellValue = targetRowCellRange.getValue(); 
+
+        negativeCounterRowCellRange.setValue(4);
+
+        // Set status highlighting with line through in sheet1 for the related company
+
+        fun.setStatusHighlighting(targetRowCellSheet, relatedCompanyRowNumber, sheet1StatusCellValue);
+
+        // Move the current call to history 
+
+
+
+    } else if (activeSheetName == 'Calls' && columnValue == 'Call Back Time' && callSheetCallResponse == 'Call Picked Up' && callsSheetStatusCellValue == 'Call Back At Specified Time') {
+
+        // Reschedule a new call at the specified time 
+
+        const followUpCallDate = activeRowArray[0][17]; 
+        const followUpCallTime = activeRowArray[0][18];
+        
+        fun.rescheduleActivity('Call', e, followUpCallDate, followUpCallTime, callSheetCallResponse); 
+
+        // Move the current call to history 
+
+        // Condition verified successfully - Alhumdulillah! 
+
+
+    } else if (activeSheetName == 'Calls' && columnValue == 'Client Response' && callSheetClientResponse == 'Call Back Later') {
+
+        // Reschedule a new call 3 days from now 
+
+        const nextFollowUpDate = Date.now() + 3 * 24 * 3600 * 1000; 
+
+        fun.rescheduleActivity('Call', e, nextFollowUpDate, '', callSheetCallResponse); 
+
+        // Update the negative counter value to +1 
+
+        // Move the current call to history 
+
+        // Condition verified successfully! Al Humdulillah! 
+
+
+    } else if ( activeSheetName == 'Calls' && columnValue == 'Meeting Granted' && callSheetCallResponse == 'Call Picked Up' && activeRowArray[0][9].length != 0) {
+
+        fun.l('status value autocompletion condition detected!'); 
+
+
+        // Update the value of status based on a function in fun library 
+
+        const newStatusRange = activeSheet.getRange(e.range.getRow(), 15); 
+
+        const newStatusValue = fun.decideStatus(e); 
+
+        fun.l('The status value based on switch statement is', newStatusValue); 
+
+        newStatusRange.setValue(newStatusValue); 
+
+
+        // Condition verified - Alhumdulillah! 
+
+
 
     }
     

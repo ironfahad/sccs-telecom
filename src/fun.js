@@ -9,6 +9,92 @@ const fun = {
     targetCellRange.setValue(message); 
 
 
+  }, l: function (desc1, value1, desc2, value2, desc3, value3, desc4, value4, desc5, value5, desc6, value6) {
+
+
+    // A powerful logging function for diagnostic purpose 
+
+    Logger.log(desc1); 
+    Logger.log(value1); 
+
+    Logger.log(desc2); 
+    Logger.log(value2);
+
+    Logger.log(desc3); 
+    Logger.log(value3);
+
+    Logger.log(desc4); 
+    Logger.log(value4);
+
+    Logger.log(desc5); 
+    Logger.log(value5);
+
+    Logger.log(desc6); 
+    Logger.log(value6);
+
+  }, decideStatus: function (e) {
+
+
+    const activeRowArray = fun.getEventData(e).activeDataRowArray; 
+
+    // Create variables for case comparison 
+
+    const meetingValue = activeRowArray[0][11]; 
+    const productInterest = activeRowArray[0][9]; 
+    const clientResponse = activeRowArray[0][8]; 
+
+    this.l('meeting value is', meetingValue, 'product interst is', productInterest, 'client response is', clientResponse); 
+
+    let statusValue; 
+
+
+    switch(true) {
+      
+
+      case meetingValue == 'No' && productInterest == 'Low Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Lead'; 
+      break; 
+
+      case meetingValue == 'No' && productInterest == 'Medium Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Strong Lead'; 
+      break; 
+
+      case meetingValue == 'No' && productInterest == 'High Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Opportunity'; 
+      break;
+
+      case meetingValue == 'Yes' && productInterest == 'Low Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Low Opportunity'; 
+      break;
+
+      case meetingValue == 'Yes' && productInterest == 'Medium Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Opportunity'; 
+      break;
+
+      case meetingValue == 'Yes' && productInterest == 'High Interest' && clientResponse == 'Interested In Business' : 
+      statusValue = 'Strong Opportunity'; 
+      break;
+
+      case meetingValue == 'No' && productInterest == 'Undecided' && clientResponse == 'Call Back Later' : 
+      statusValue = 'Call Back Later'; 
+      break;
+
+      case meetingValue == 'No' && productInterest == 'Undecided' && clientResponse == 'Call Back At Specified Time' : 
+      statusValue = 'Call Back At Specified Time'; 
+      break;
+
+      default: statusValue = 'Condition Not Found'; 
+
+      // Al Humdulillah! our switch statement has started working correctly! 
+      
+
+    }
+
+    return statusValue; 
+
+
+
+
   }, findFirstEmptyRow: function (spreadsheetID, sheetName) {
 
     const ss = SpreadsheetApp.openById(spreadsheetID); 
@@ -365,7 +451,7 @@ const fun = {
     const operationsSheet = resources.strategicSS().operationsSheet; 
     const projectsRange = operationsSheet.getRange(2, 1, operationsSheet.getLastRow() - 1, 11);
     const operationsTotalProjectsArray = projectsRange.getValues();  
-    const strategicTasksSheet = resources.strategicSS().ss.getSheetByName('Strategic Management'); 
+    const strategicTasksSheet = resources.strategicSS().ss.getSheetByName('Strategic Management');
 
     // Verify the accuracy of the resources data
      
@@ -478,17 +564,63 @@ const fun = {
 
     // Get the active sheet data row 
 
-    const ActiveCompanyDataArray = fun.getEventData(e).activeDataRowArray; 
+    const activeSpreadSheet = SpreadsheetApp.getActiveSpreadsheet(); 
+    const activeSheet = activeSpreadSheet.getActiveSheet(); 
+    const activeSheetName = activeSheet.getName(); 
+    const activeRowArray = fun.getEventData(e).activeDataRowArray; 
+    const companylistSheet = activeSpreadSheet.getSheetByName('Sheet1'); 
+    const callsSheet = activeSpreadSheet.getSheetByName('Calls'); 
+    const meetingsSheet = activeSpreadSheet.getSheetByName('Meetings'); 
+
+    if ( activeSheetName == 'Sheet1') {
+
+
+      const ActiveCompanyDataArray = activeRowArray; 
+
+      Logger.log(`Active company data array is`); 
+
+      Logger.log(ActiveCompanyDataArray); 
+
+      companiesListLastRowRange.setValues(ActiveCompanyDataArray);
+
+      Logger.log("loadBalancerCompany function has been executed successfully!");
+
+
+    } else if ( activeSheetName == 'Calls') {
+ 
+
+     const companyListRowNumber = this.findRowNumber(activeSpreadSheet.getId(), 'Sheet1', activeRowArray[0][1]); 
+
+     const companyListRowRange = companylistSheet.getRange(companyListRowNumber, 1, 1, companylistSheet.getLastColumn()); 
+     const companyListRowArray = companyListRowRange.getValues(); 
+
+     companiesListLastRowRange.setValues(companyListRowArray); 
+
+     Logger.log("loadBalancerCompany function has been executed successfully!");
+
+
+    } else if ( sheetName == 'Meetings') {
+
+
+
+    } else if ( sheetName == 'Tasks') {
+
+
+
+    }
+
+    // Here we need to design a custom array that can fit to the companies list or we need to find the company array from the sheet1 .. lets see what can we do
+    
 
     // Set the data to the target sheet 
 
-    Logger.log(`Active company data array is`); 
+    // Logger.log(`Active company data array is`); 
 
-    Logger.log(ActiveCompanyDataArray); 
+    // Logger.log(ActiveCompanyDataArray); 
 
-    companiesListLastRowRange.setValues(ActiveCompanyDataArray);
+    // companiesListLastRowRange.setValues(ActiveCompanyDataArray);
 
-    Logger.log("loadBalancerCompany function has been executed successfully!"); 
+    // Logger.log("loadBalancerCompany function has been executed successfully!"); 
 
   }, 
 
@@ -618,8 +750,11 @@ const fun = {
       const activeRowArray = this.getEventData(e).activeDataRowArray; 
       const remarksHistory = activeRowArray[0][23]; 
 
-      const designatedEmployeeCallSheet = SpreadsheetApp.openById(campaignTargetListFileId).getSheetByName('Calls'); 
+      const designatedEmployeeSS = SpreadsheetApp.openById(campaignTargetListFileId); 
+
+      const designatedEmployeeCallSheet = designatedEmployeeSS.getSheetByName('Calls'); 
       const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
+      const activeSheetName = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName(); 
 
       // const callDataArray = []; 
 
@@ -653,7 +788,7 @@ const fun = {
 
       // end of duplicate value check function 
 
-      if( duplicateValueCheck.length === 0) {
+      if( duplicateValueCheck.length === 0 && activeSheetName == 'Sheet1') {
 
         const callDataArray = []; 
 
@@ -686,6 +821,39 @@ const fun = {
         designatedEmployeeCallSheet.getRange(2, 1, designatedEmployeeCallSheet.getLastRow() - 1, designatedEmployeeCallSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
         // designatedEmployeeCallSheet.sort(1);  
 
+
+      } else if ( duplicateValueCheck === 0 && activeSheetName == 'Calls') {
+
+        const callDataArray = activeRowArray; 
+
+        callDataArray[0] = Math.floor(Math.random() * 10000000000); 
+        callDataArray[1] = activeRowArray[0][0]; // company ID 
+        callDataArray[2] = activeRowArray[0][5]; // cell phone number 
+        callDataArray[3] = activeRowArray[0][6]; // company landline number 
+        callDataArray[4] = activeRowArray[0][4]; // person name 
+        callDataArray[5] = activeRowArray[0][1]; // company name 
+        callDataArray[6] = remarksHistory; // Call History 
+        callDataArray[7] = ''; 
+        callDataArray[8] = ''; 
+        callDataArray[9] = activeRowArray[0][19]; // need product data
+        callDataArray[10] = 'Outbound'; 
+        callDataArray[11] = '';
+        callDataArray[12] = '';
+        callDataArray[13] = '';
+        callDataArray[14] = '';
+        callDataArray[15] = ''; 
+        callDataArray[16] = 'Planned'; // follow up status 
+        callDataArray[17] = new Date(activeRowArray[0][16]).toDateString(); 
+        callDataArray[18] = new Date(activeRowArray[0][15]).toLocaleTimeString('en-US'); 
+        callDataArray[19] = activeRowArray[0][28] + 1; // negative counter score 
+        
+
+        Logger.log('the Call Data array is'); 
+        Logger.log(callDataArray);
+
+        designatedEmployeeCallSheetRange.setValues([callDataArray]);
+        designatedEmployeeCallSheet.getRange(2, 1, designatedEmployeeCallSheet.getLastRow() - 1, designatedEmployeeCallSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
+        // designatedEmployeeCallSheet.sort(1);
 
       }
       
@@ -1036,7 +1204,7 @@ const fun = {
       callDataArray[5] = activeRowArray[0][5]; // company name 
       callDataArray[6] = newStringofHistory; // Call History 
       callDataArray[7] = ''; // call response 
-      callDataArray[8] = ''; // client response 
+      callDataArray[8] = 'Interested in Business'; // client response 
       callDataArray[9] = ''; // product interest
       callDataArray[10] = 'Outbound'; 
       callDataArray[11] = ''; // meeting granted 
