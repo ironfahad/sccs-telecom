@@ -751,12 +751,15 @@ const fun = {
 
       const activeRowArray = this.getEventData(e).activeDataRowArray; 
       const remarksHistory = activeRowArray[0][23]; 
+      const callResponse = activeRowArray[0][7]; 
+      const previousCallRemarks = activeRowArray[0][15]; 
 
       const designatedEmployeeSS = SpreadsheetApp.openById(campaignTargetListFileId); 
 
       const designatedEmployeeCallSheet = designatedEmployeeSS.getSheetByName('Calls'); 
       const designatedEmployeeCallSheetRange = designatedEmployeeCallSheet.getRange(designatedEmployeeCallSheet.getLastRow() + 1, 1, 1, designatedEmployeeCallSheet.getLastColumn()); 
-      const activeSheetName = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName(); 
+      const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+      const activeSheetName = activeSheet.getName();
 
       // const callDataArray = []; 
 
@@ -787,12 +790,33 @@ const fun = {
 
       Logger.log(`the duplicate value check is ${duplicateValueCheck}`); 
       Logger.log(`the length of duplicate value check is ${duplicateValueCheck.length}`); 
+      Logger.log('Hello World!'); 
 
-      this.l('name of the active sheet is ', activeSheetName); 
+      Logger.log('name of the active sheet is '); 
+      Logger.log(activeSheetName); 
 
       // end of duplicate value check function 
 
-      if( duplicateValueCheck.length === 0 && activeSheetName == 'Sheet1') {
+      // Call history processing algorithm... 
+
+      const existingHistoryValue = activeSheet.getRange(e.range.getRow(), 7).getValue(); 
+      Logger.log(`history value is ${existingHistoryValue}`); 
+      const existingHistoryValueArray = existingHistoryValue.split('-'); 
+      Logger.log('History value array is ');
+      Logger.log(existingHistoryValueArray)
+      Logger.log('array length'); 
+      Logger.log(existingHistoryValueArray.length);
+      existingHistoryValueArray.push(callResponse); 
+      existingHistoryValueArray.push(previousCallRemarks); 
+      Logger.log(existingHistoryValueArray); 
+      const newStringofHistory = existingHistoryValueArray.join("--"); 
+      Logger.log(newStringofHistory);
+
+      // End of history algorithm 
+
+      if( duplicateValueCheck.length == 0 && activeSheetName == 'Sheet1') {
+
+        this.l('sheet1 condition detected!')
 
         const callDataArray = []; 
 
@@ -802,7 +826,7 @@ const fun = {
         callDataArray[3] = activeRowArray[0][6]; // company landline number 
         callDataArray[4] = activeRowArray[0][4]; // person name 
         callDataArray[5] = activeRowArray[0][1]; // company name 
-        callDataArray[6] = remarksHistory; // Call History 
+        callDataArray[6] = newStringofHistory; // Call History 
         callDataArray[7] = ''; 
         callDataArray[8] = ''; 
         callDataArray[9] = activeRowArray[0][19]; // need product data
@@ -826,11 +850,13 @@ const fun = {
         // designatedEmployeeCallSheet.sort(1);  
 
 
-      } else if ( duplicateValueCheck === 0 && activeSheetName == 'Calls') {
+      } else if ( duplicateValueCheck == 0 && activeSheetName == 'Calls') {
 
         
 
         const callDataArray = activeRowArray; 
+
+        callDataArray[0][6] = newStringofHistory; 
 
         this.l('Active Sheet detected from telecom executive is Calls Sheet and the data is', activeRowArray); 
 
@@ -859,7 +885,7 @@ const fun = {
         Logger.log('the Call Data array is'); 
         Logger.log(callDataArray);
 
-        designatedEmployeeCallSheetRange.setValues([callDataArray]);
+        designatedEmployeeCallSheetRange.setValues(callDataArray);
         designatedEmployeeCallSheet.getRange(2, 1, designatedEmployeeCallSheet.getLastRow() - 1, designatedEmployeeCallSheet.getLastColumn()).sort([{ column: 11, ascending: true }]);
         // designatedEmployeeCallSheet.sort(1);
 
@@ -1197,7 +1223,7 @@ const fun = {
 
       existingHistoryValueArray.push(callResponse); 
       Logger.log(existingHistoryValueArray); 
-      const newStringofHistory = existingHistoryValueArray.join("-"); 
+      const newStringofHistory = existingHistoryValueArray.join("--"); 
       Logger.log(newStringofHistory); 
 
       if (callsSheetNegativeCounter < 4) { 
